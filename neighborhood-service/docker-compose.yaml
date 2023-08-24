@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+  neighborhood-service:
+    image: dev.local/neighborhood-service:0.1
+    container_name: neighborhood-service
+    ports:
+      - 8081:8081
