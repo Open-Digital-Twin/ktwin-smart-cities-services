@@ -28,14 +28,26 @@ pip freeze > requirements.txt
 ## Build Docker Container
 
 ```bash
-docker build -t ktwin/pole-service:0.1 .
-docker compose up -d
+docker build -t open-digital-twin/ktwin-pole-service:0.1 .
+```
+
+## Push Docker Container
+
+```bash
+docker push ghcr.io/open-digital-twin/ktwin-pole-service:0.1 .
 ```
 
 ## Load Docker into Kind
 
 ```bash
-kind load docker-image ktwin/pole-service:0.1
+docker build -t dev.local/open-digital-twin/ktwin-pole-service:0.1 .
+kind load docker-image dev.local/open-digital-twin/ktwin-pole-service:0.1
+```
+
+## Docker compose
+
+```bash
+docker compose up -d
 ```
 
 ## Example of cloud payload
