@@ -47,11 +47,12 @@ def handle_air_quality_observed_event(event: KTwinEvent):
 
     update_twin_event(event)
 
-    if air_quality_observed["SO2_level"] > 10:
-        parent_twins = get_parent_twins()
+    # Propagate to parent
+    # if air_quality_observed["SO2_level"] > 10:
+    #     parent_twins = get_parent_twins()
 
-        if (parent_twins) > 0:
-            send_air_quality_to_neighborhood(air_quality_observed, parent_twins[0])
+    #     if (parent_twins) > 0:
+    #         send_air_quality_to_neighborhood(air_quality_observed, parent_twins[0])
 
 def send_air_quality_to_neighborhood(air_quality_observed, parent_twin: Twin):
     data = {
