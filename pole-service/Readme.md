@@ -28,13 +28,13 @@ pip freeze > requirements.txt
 ## Build Docker Container
 
 ```bash
-docker build -t open-digital-twin/ktwin-pole-service:0.1 .
+docker build -t ghcr.io/open-digital-twin/ktwin-pole-service:0.1 .
 ```
 
 ## Push Docker Container
 
 ```bash
-docker push ghcr.io/open-digital-twin/ktwin-pole-service:0.1 .
+docker push ghcr.io/open-digital-twin/ktwin-pole-service:0.1
 ```
 
 ## Load Docker into Kind
