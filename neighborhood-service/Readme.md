@@ -44,7 +44,7 @@ Expected behavior: the City Pole will process the event, calculate the air quali
 
 ```sh
 curl --request POST \
-  --url http://localhost:8081/ \
+  --url http://localhost:8080/ \
   --header 'Content-Type: application/json' \
   --header 'ce-id: 123' \
   --header 'ce-source: air-quality-observed-001' \
@@ -143,7 +143,7 @@ Expected behavior: the City Pole will process the event, calculates the feels li
 
 ```sh
 curl --request POST \
-  --url http://localhost:8081/ \
+  --url http://localhost:8080/ \
   --header 'Content-Type: application/json' \
   --header 'ce-id: 123' \
   --header 'ce-source: weather-observed-001' \
