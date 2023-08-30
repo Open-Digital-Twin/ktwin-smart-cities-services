@@ -44,7 +44,7 @@ Expected behavior: it process the event and in case of low battery level, it sen
 
 ```sh
 curl --request POST \
-  --url http://localhost:8081/ \
+  --url http://localhost:8080/ \
   --header 'Content-Type: application/json' \
   --header 'ce-id: 123' \
   --header 'ce-source: device-001' \

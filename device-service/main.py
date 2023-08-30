@@ -52,4 +52,4 @@ def air_quality_level():
 
 if __name__ == "__main__":
     app.logger.info("Starting up server...")
-    app.run(host='0.0.0.0', port=8081)
+    app.run(host='0.0.0.0', port=8080)
