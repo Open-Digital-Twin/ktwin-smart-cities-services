@@ -25,8 +25,8 @@ def home():
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    handle_event(request, 'air-quality-observed', handle_air_quality_observed_event)
-    handle_event(request, 'weather-observed', handle_weather_observed_event)
+    handle_event(request, 'ngsi-ld-city-airqualityobserved', handle_air_quality_observed_event)
+    handle_event(request, 'ngsi-ld-city-weatherobserved', handle_weather_observed_event)
 
     # Return 204 - No-content
     return "", 204
