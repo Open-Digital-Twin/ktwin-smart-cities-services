@@ -66,14 +66,17 @@ def air_quality_level():
     }
 
 def handle_weather_observed_event(event: KTwinEvent):
+    app.logger.info(f"Processing {event.twin_instance} event")
+
     latest_event = get_latest_twin_event(event.twin_interface, event.twin_instance)
     if latest_event is None:
-        latest_event = KTwinEvent(event.cloud_event)
+        latest_event = event
 
     weather_observed = event.cloud_event.data
     weather_observed["pressureTendency"] = calculate_pressure_tendency(latest_event, event)
     weather_observed["FeelsLikeTemperature"] = calculate_feel_like_temperature(weather_observed["temperature"], weather_observed["WindSpeed"])
     weather_observed["dewpoint"] = calculate_dewpoint(weather_observed["temperature"], weather_observed["relativeHumidity"])
+    event.cloud_event.data = weather_observed
 
     update_twin_event(event)
 
