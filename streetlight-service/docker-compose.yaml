@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+  streetlight-service:
+    image: dev.local/streetlight-service:0.1
+    container_name: streetlight-service
+    ports:
+      - 8080:8080
