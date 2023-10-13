@@ -53,7 +53,7 @@ docker compose up -d
 
 ### Power State
 
-Expected behavior: the City Pole will process the event, calculate the air quality levels based on the provided values and update the record in Event Store.
+Expected behavior: in case the power state is the same for the last 48h, it sets the Streetlight to broken and notify pole and neighborhood.
 
 ```sh
 curl --request POST \
