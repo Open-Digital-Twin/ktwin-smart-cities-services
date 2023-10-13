@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+  parking-service:
+    image: dev.local/parking-service:0.1
+    container_name: parking-service
+    ports:
+      - 8080:8080
