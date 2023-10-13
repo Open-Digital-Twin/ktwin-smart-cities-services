@@ -33,17 +33,17 @@ def home():
 
 def handle_air_quality_observed_event(event: KTwinEvent):
     air_quality_observed = event.cloud_event.data
-    air_quality_observed["CO2_level"] = air_quality_level()
-    air_quality_observed["CO_level"] = air_quality_level()
-    air_quality_observed["PM10_level"] = air_quality_level()
-    air_quality_observed["PM25_level"] = air_quality_level()
-    air_quality_observed["NO_level"] = air_quality_level()
-    air_quality_observed["SO2_level"] = air_quality_level()
-    air_quality_observed["C6H6level"] = air_quality_level()
-    air_quality_observed["CD_level"] = air_quality_level()
-    air_quality_observed["O3_level"] = air_quality_level()
-    air_quality_observed["PB_level"] = air_quality_level()
-    air_quality_observed["SH2_level"] = air_quality_level()
+    air_quality_observed["CO2_level"] = air_quality_level(air_quality_observed["CO2Density"])
+    air_quality_observed["CO_level"] = air_quality_level(air_quality_observed["CODensity"])
+    air_quality_observed["PM10_level"] = air_quality_level(air_quality_observed["PM10Density"])
+    air_quality_observed["PM25_level"] = air_quality_level(air_quality_observed["PM25Density"])
+    air_quality_observed["NO_level"] = air_quality_level(air_quality_observed["NODensity"])
+    air_quality_observed["SO2_level"] = air_quality_level(air_quality_observed["SO2Density"])
+    air_quality_observed["C6H6level"] = air_quality_level(air_quality_observed["C6H6Density"])
+    air_quality_observed["CD_level"] = air_quality_level(air_quality_observed["CDDensity"])
+    air_quality_observed["O3_level"] = air_quality_level(air_quality_observed["O3Density"])
+    air_quality_observed["PB_level"] = air_quality_level(air_quality_observed["PBDensity"])
+    air_quality_observed["SH2_level"] = air_quality_level(air_quality_observed["SH2Density"])
 
     update_twin_event(event)
 
@@ -60,10 +60,21 @@ def send_air_quality_to_neighborhood(air_quality_observed, parent_twin: Twin):
     }
     push_to_virtual_twin(parent_twin.twin_interface, parent_twin.twin_instance, data=data)
 
-def air_quality_level():
-    return {
-        "level": "good"
-    }
+def air_quality_level(density: float):
+    if density is None or density < 0:
+        return { "level": "unknown"}
+    elif density <= 50:
+        return { "level": "good" }
+    elif density <= 100:
+        return { "level": "moderate" }
+    elif density <= 150:
+        return { "level": "unhealthyForSensitiveGroups" }
+    elif density <= 200:
+        return { "level": "unhealthy" }
+    elif density <= 300:
+        return { "level": "veryUnhealthy" }
+    else:
+        return { "level": "hazardous" }
 
 def handle_weather_observed_event(event: KTwinEvent):
     app.logger.info(f"Processing {event.twin_instance} event")
