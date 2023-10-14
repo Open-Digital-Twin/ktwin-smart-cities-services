@@ -1,15 +1,20 @@
 import requests
 from ..common import EVENT_TYPE_COMMAND_EXECUTED, build_cloud_event, get_broker_url, KTwinCommandEvent
+from ..twingraph import get_relationship_from_graph, load_twin_graph
 from cloudevents.http import to_structured, from_http
 
-# Command: is the name of the command that will be invoked in the target interface
-# CommandPayload: is the command payload that is going to be sent to the target instance
-# RelationshipName: the relationship name in the graph that will receive the command. TwinInstance and Interface are populated based the relationship information of the KTWIN Graph
-# Source: the source Twin Instance that is generating the event.
-def invoke_command(command: str, commandPayload: dict, relationshipName: str, twin_instance: str):
-    ce_type = EVENT_TYPE_COMMAND_EXECUTED.format(twin_interface)
+# command: the name of the command that will be invoked in the target interface.
+# command_payload: is the command payload that is going to be sent to the target interface.
+# relationship_name: the relationship name in the graph that will receive the command.
+# source: the source twin instance that is generating the event.
+def execute_command(command: str, command_payload: dict, relationship_name: str, twin_instance: str):
+    twin_graph = load_twin_graph()
+    relationship = get_relationship_from_graph(twin_instance=twin_instance, relationship_name=relationship_name, twin_graph=twin_graph)
+    if relationship is None:
+        raise ValueError("Relationship not exists")
+    ce_type = EVENT_TYPE_COMMAND_EXECUTED.format(relationship.twin_interface + "." + command)
     ce_source = twin_instance
-    cloud_event = build_cloud_event(ce_type, ce_source, commandPayload)
+    cloud_event = build_cloud_event(ce_type=ce_type, ce_source=ce_source, data=command_payload)
     headers, body = to_structured(cloud_event)
     response = requests.post(get_broker_url(), headers=headers, data=body)
 

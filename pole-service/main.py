@@ -7,6 +7,7 @@ from flask import Flask, request
 import modules.ktwin.event as kevent
 import modules.ktwin.eventstore as keventstore
 import modules.ktwin.twingraph as twingraph
+import modules.ktwin.command as kcommand
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -51,20 +52,11 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
 
     keventstore.update_twin_event(event)
 
-    execute_command(commandPayload={}, command="notify", relationshipName="neighborhood")
-
-    # Propagate to parent
-    # if air_quality_observed["SO2_level"] > 10:
-    #     parent_twins = get_parent_twins()
-    #     if (parent_twins) > 0:
-    #         send_air_quality_to_neighborhood(air_quality_observed, parent_twins[0])
-
-
-# def send_air_quality_to_neighborhood(air_quality_observed, parent_twin: TwinReference):
-#     data = {
-#         "SO2_level": air_quality_observed["SO2_level"]
-#     }
-#     kevent.push_to_virtual_twin(parent_twin.twin_interface, parent_twin.twin_instance, data=data)
+    # Propagate to neighborhood
+    if air_quality_observed["SO2_level"] > 10:
+        payload = dict()
+        payload["value"] = 1
+        kcommand.execute_command(command_payload=payload, command="incrementPoleWithSO2Level", relationship_name="neighborhood", twin_instance=event.cloud_event["source"])
 
 def air_quality_level(density: float):
     if density is None or density < 0:

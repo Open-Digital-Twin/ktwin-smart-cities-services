@@ -35,20 +35,7 @@ def load_twin_graph() -> dict[TwinGraph]:
 
     return twin_graph
 
-def push_event_to_relationship(twin_instance: str, relationship_name: str, twin_graph: dict[str, TwinGraph], payload_data: dict) -> TwinReference:
-    relationship = get_relationship_reference(twin_instance=twin_instance, relationship_name=relationship_name, twin_graph=twin_graph)
-
-    if relationship != None:
-        ce_type = EVENT_TYPE_VIRTUAL_GENERATED.format(relationship.twin_interface)
-        ce_source = twin_instance
-        cloud_event = build_cloud_event(ce_type, ce_source, payload_data)
-        headers, body = to_structured(cloud_event)
-        response = requests.post(get_broker_url(), headers=headers, data=body)
-
-        if response.status_code != 202:
-            raise Exception("Error when pushing to event broker", response)
-
-def get_relationship_reference(twin_instance: str, relationship_name: str, twin_graph: dict[str, TwinGraph]) -> TwinReference:
+def get_relationship_from_graph(twin_instance: str, relationship_name: str, twin_graph: dict[str, TwinGraph]) -> TwinReference:
     graph_node = twin_graph[twin_instance]
     
     for relationship in graph_node.relationships:
