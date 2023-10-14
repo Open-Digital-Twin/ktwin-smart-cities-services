@@ -1,3 +1,4 @@
+import os
 import requests
 from ..common import get_event_store_url, KTwinEvent
 from cloudevents.http import from_http, to_binary
@@ -18,9 +19,9 @@ def get_latest_twin_event(twin_interface, twin_instance):
 def update_twin_event(ktwin_event: KTwinEvent):
     url = get_event_store_url() + "/api/v1/twin-events"
     headers, body = to_binary(ktwin_event.cloud_event)
-    response = requests.post(url, data=body, headers=headers)
 
-    if response.status_code != 202:
-        raise Exception("Error while updating twin event", response)
+    if os.getenv("ENV") != "local":
+        response = requests.post(url, data=body, headers=headers)
 
-    return response
+        if response.status_code != 202:
+            raise Exception("Error while updating twin event", response)

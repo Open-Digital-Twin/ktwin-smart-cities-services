@@ -1,3 +1,4 @@
+import os
 import requests
 from ..common import EVENT_TYPE_COMMAND_EXECUTED, build_cloud_event, get_broker_url, KTwinCommandEvent
 from ..twingraph import get_relationship_from_graph, load_twin_graph, get_twin_graph_by_relationship
@@ -16,10 +17,12 @@ def execute_command(command: str, command_payload: dict, relationship_name: str,
     ce_source = twin_instance
     cloud_event = build_cloud_event(ce_type=ce_type, ce_source=ce_source, data=command_payload)
     headers, body = to_structured(cloud_event)
-    response = requests.post(get_broker_url(), headers=headers, data=body)
 
-    if response.status_code != 202:
-        raise Exception("Error when pushing to event broker", response)
+    if os.getenv("ENV") != "local":
+        response = requests.post(get_broker_url(), headers=headers, data=body)
+
+        if response.status_code != 202:
+            raise Exception("Error when pushing to event broker", response)
 
 def handle_command(request: requests.Request, twin_interface: str, command: str, callback):
     twin_graph = load_twin_graph()
