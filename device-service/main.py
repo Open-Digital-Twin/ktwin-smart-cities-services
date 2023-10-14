@@ -1,9 +1,11 @@
 import os
 import sys
 import logging
+import datetime
 from dotenv import load_dotenv
 from flask import Flask, request
-from modules.ktwin import handle_request, handle_event, KTwinEvent, Twin, get_latest_twin_event, update_twin_event, get_parent_twins, push_to_virtual_twin
+import modules.ktwin.event as kevent
+import modules.ktwin.eventstore as keventstore
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -18,37 +20,40 @@ app.logger.setLevel(logging.INFO)
 
 @app.route("/", methods=["POST"])
 def home():
-    event = handle_request(request)
+    event = kevent.handle_request(request)
 
     app.logger.info(
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    handle_event(request, 'device', handle_device_event)
+    kevent.handle_event(request, 'ngsi-ld-city-device', handle_device_event)
 
     # Return 204 - No-content
     return "", 204
 
-def handle_device_event(event: KTwinEvent):
-    device_event = event.cloud_event.data
-    
-    if device_event["batteryLevel"] < 15:
-        # Must get something that is not the parent
-        parent_twins = get_parent_twins()
+# Handle event device
+# Logic: 
+# - In case the battery level is below 15% reduce the frequency to 1 time every 60 min
+# - In case the battery level is above 15% keep the frequency to 1 time every 15 min
+def handle_device_event(event: kevent.KTwinEvent):
+    HIGH_FREQUENCY = 15 # 15min
+    LOW_FREQUENCY = 60 # 60min
+    BATTERY_THRESHOLD = 15 # percentage of battery available
 
-        if (parent_twins) > 0:
-            send_battery_level_to_neighborhood(device_event, parent_twins[0])
+    device_event_data = event.cloud_event.data
+    device_event_data["dateObserved"] = datetime.datetime.now().isoformat()
 
-def send_battery_level_to_neighborhood(batteryLevel, target_twin: Twin):
-    data = {
-        "batteryLevel": batteryLevel
-    }
-    push_to_virtual_twin(target_twin.twin_interface, target_twin.twin_instance, data=data)
+    if device_event_data["batteryLevel"] < BATTERY_THRESHOLD:
+        # Propagate event to real device to measure in low frequency
+        device_event_data["measurementFrequency"] = LOW_FREQUENCY
+        kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
+    elif device_event_data["batteryLevel"] > BATTERY_THRESHOLD and device_event_data["measurementFrequency"] == LOW_FREQUENCY:
+        # Propagate event to real device to measure in high frequency
+        device_event_data["measurementFrequency"] = HIGH_FREQUENCY
+        kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
 
-def air_quality_level():
-    return {
-        "level": "good"
-    }
+    event.cloud_event.data = device_event_data
+    keventstore.update_twin_event(event)
 
 if __name__ == "__main__":
     app.logger.info("Starting up server...")
