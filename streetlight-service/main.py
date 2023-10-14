@@ -4,7 +4,10 @@ import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request
-from modules.ktwin import handle_request, handle_event, KTwinEvent, Twin, get_latest_twin_event, update_twin_event, get_parent_twins, push_to_virtual_twin
+import modules.ktwin.event as kevent
+import modules.ktwin.eventstore as keventstore
+import modules.ktwin.twingraph as twingraph
+import modules.ktwin.command as kcommand
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -19,25 +22,25 @@ app.logger.setLevel(logging.INFO)
 
 @app.route("/", methods=["POST"])
 def home():
-    event = handle_request(request)
+    event = kevent.handle_request(request)
 
     app.logger.info(
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    handle_event(request, 'ngsi-ld-city-streetlight', handle_streetlight_event)
+    kevent.handle_event(request, 'ngsi-ld-city-streetlight', handle_streetlight_event)
 
     # Return 204 - No-content
     return "", 204
 
-def handle_streetlight_event(event: KTwinEvent):
+def handle_streetlight_event(event: kevent.KTwinEvent):
     current_streetlight_event = event.cloud_event.data
     
     if "powerState" not in current_streetlight_event:
         app.logger.info(f"Event {event.cloud_event} has no powerState attribute value")
     else:
         current_power_state_value = current_streetlight_event["powerState"]
-        latest_streetlight_event = get_latest_twin_event(event.twin_interface, event.twin_instance)
+        latest_streetlight_event = keventstore.get_latest_twin_event(event.twin_interface, event.twin_instance)
         datetime_now = datetime.datetime.now()
 
         if latest_streetlight_event is not None:
@@ -66,7 +69,7 @@ def handle_streetlight_event(event: KTwinEvent):
                 event.cloud_event.data["dateLastSwitchingOff"] = datetime_now.isoformat()
             event.cloud_event.data["powerState"] = "ok"
 
-        update_twin_event(event)
+        keventstore.update_twin_event(event)
 
 # In case of 48h of no change in the state, we consider that lamp with a defect
 def is_with_defect(datetime_now: datetime, date_last_switching: datetime):

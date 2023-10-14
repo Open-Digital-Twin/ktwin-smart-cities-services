@@ -1,0 +1,11 @@
+POST http://localhost:8080/ HTTP/1.1
+content-type: application/json
+ce-specversion: 1.0
+ce-type: ktwin.real.ngsi-ld-city-streetlight
+ce-source: ngsi-ld-city-streetlight-001
+ce-id: 491e0b8a-4896-4f70-a440-c89a248df4ea
+ce-time: 2023-10-16T18:54:04.924Z
+
+{
+    "powerState": "on"
+}
