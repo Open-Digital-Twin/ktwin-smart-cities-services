@@ -4,7 +4,9 @@ import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request
-from modules.ktwin import handle_request, handle_event, KTwinEvent, Twin, get_latest_twin_event, update_twin_event, get_parent_twins, push_to_virtual_twin
+import modules.ktwin.event as kevent
+import modules.ktwin.eventstore as keventstore
+import modules.ktwin.twingraph as twingraph
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -17,21 +19,23 @@ handler.setFormatter(logging.Formatter(
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
+twin_graph = twingraph.load_twin_graph()
+
 @app.route("/", methods=["POST"])
 def home():
-    event = handle_request(request)
+    event = kevent.handle_request(request)
 
     app.logger.info(
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    handle_event(request, 'ngsi-ld-city-airqualityobserved', handle_air_quality_observed_event)
-    handle_event(request, 'ngsi-ld-city-weatherobserved', handle_weather_observed_event)
-
+    kevent.handle_event(request, 'ngsi-ld-city-airqualityobserved', handle_air_quality_observed_event)
+    kevent.handle_event(request, 'ngsi-ld-city-weatherobserved', handle_weather_observed_event)
+    
     # Return 204 - No-content
     return "", 204
 
-def handle_air_quality_observed_event(event: KTwinEvent):
+def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     air_quality_observed = event.cloud_event.data
     air_quality_observed["CO2_level"] = air_quality_level(air_quality_observed["CO2Density"])
     air_quality_observed["CO_level"] = air_quality_level(air_quality_observed["CODensity"])
@@ -45,20 +49,22 @@ def handle_air_quality_observed_event(event: KTwinEvent):
     air_quality_observed["PB_level"] = air_quality_level(air_quality_observed["PBDensity"])
     air_quality_observed["SH2_level"] = air_quality_level(air_quality_observed["SH2Density"])
 
-    update_twin_event(event)
+    keventstore.update_twin_event(event)
+
+    execute_command(commandPayload={}, command="notify", relationshipName="neighborhood")
 
     # Propagate to parent
     # if air_quality_observed["SO2_level"] > 10:
     #     parent_twins = get_parent_twins()
-
     #     if (parent_twins) > 0:
     #         send_air_quality_to_neighborhood(air_quality_observed, parent_twins[0])
 
-def send_air_quality_to_neighborhood(air_quality_observed, parent_twin: Twin):
-    data = {
-        "SO2_level": air_quality_observed["SO2_level"]
-    }
-    push_to_virtual_twin(parent_twin.twin_interface, parent_twin.twin_instance, data=data)
+
+# def send_air_quality_to_neighborhood(air_quality_observed, parent_twin: TwinReference):
+#     data = {
+#         "SO2_level": air_quality_observed["SO2_level"]
+#     }
+#     kevent.push_to_virtual_twin(parent_twin.twin_interface, parent_twin.twin_instance, data=data)
 
 def air_quality_level(density: float):
     if density is None or density < 0:
@@ -76,10 +82,10 @@ def air_quality_level(density: float):
     else:
         return { "level": "hazardous" }
 
-def handle_weather_observed_event(event: KTwinEvent):
+def handle_weather_observed_event(event: kevent.KTwinEvent):
     app.logger.info(f"Processing {event.twin_instance} event")
 
-    latest_event = get_latest_twin_event(event.twin_interface, event.twin_instance)
+    latest_event = keventstore.get_latest_twin_event(event.twin_interface, event.twin_instance)
     if latest_event is None:
         latest_event = event
 
@@ -89,9 +95,9 @@ def handle_weather_observed_event(event: KTwinEvent):
     weather_observed["dewpoint"] = calculate_dewpoint(weather_observed["temperature"], weather_observed["relativeHumidity"])
     event.cloud_event.data = weather_observed
 
-    update_twin_event(event)
+    keventstore.update_twin_event(event)
 
-def calculate_pressure_tendency(latest_event: KTwinEvent, current_event: KTwinEvent):
+def calculate_pressure_tendency(latest_event: kevent.KTwinEvent, current_event: kevent.KTwinEvent):
     latest_cloud_event = latest_event.cloud_event.data
     current_cloud_event = current_event.cloud_event.data
 

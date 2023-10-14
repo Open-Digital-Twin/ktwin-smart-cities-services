@@ -1,0 +1,2 @@
+# Smart Cities data definitions
+
