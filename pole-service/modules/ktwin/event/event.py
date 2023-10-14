@@ -6,7 +6,7 @@ from cloudevents.http import to_structured, from_http
 # Event Handling
 # Handle Real-Virtual and Virtual-Real Twin communications
 
-def push_to_real_twin(twin_interface, twin_instance, data):
+def send_to_real_twin(twin_interface, twin_instance, data):
     ce_type = EVENT_TYPE_VIRTUAL_GENERATED.format(twin_interface)
     ce_source = twin_instance
     cloud_event = build_cloud_event(ce_type, ce_source, data)
