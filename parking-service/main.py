@@ -60,7 +60,7 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
                 command_payload["vehicleExitCount"] = 1
                 kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
 
-def handle_update_vehicle_count_command(command_event: kcommand.KTwinCommandEvent, target_twin_instance: ktwingraph.TwinReference):
+def handle_update_vehicle_count_command(command_event: kcommand.KTwinCommandEvent, target_twin_instance: ktwingraph.TwinInstanceReference):
     current_offstreetparking_data = command_event.cloud_event.data
     latest_offstreetparking_event = keventstore.get_latest_twin_event(twin_interface=target_twin_instance.twin_interface, twin_instance=target_twin_instance.twin_instance)
     latest_offstreetparking_data = None
