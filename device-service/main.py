@@ -13,8 +13,7 @@ if os.getenv("ENV") == "local":
 app = Flask(__name__)
 
 handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
