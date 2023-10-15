@@ -1,12 +1,58 @@
 POST http://localhost:8080/ HTTP/1.1
 content-type: application/json
 ce-specversion: 1.0
-ce-type: ktwin.real.ngsi-ld-city-device
-ce-source: ngsi-ld-city-device-001
+ce-type: ktwin.real.ngsi-ld-city-airqualityobserved
+ce-source: ngsi-ld-city-airqualityobserved-001
 ce-id: 491e0b8a-4896-4f70-a440-c89a248df4ea
 ce-time: 2023-10-16T18:54:04.924Z
 
 {
-    "batteryLevel": 20,
-    "measurementFrequency": 15
+	"reliability": 8,
+	"volatileOrganicCompoundsTotal": 10,
+	"CO2Density": 8,
+	"CODensity": 8,
+	"PM1Density": 8,
+	"PM10Density": 8,
+	"PM25Density": 8,
+	"SO2Density": 8,
+	"C6H6Density": 8,
+	"NIDensity": 8,
+	"ASDensity": 8,
+	"CDDensity": 8,
+    "NODensity": 8,
+	"NO2Density": 8,
+	"O3Density": 8,
+	"PBDensity": 8,
+	"SH2Density": 8,
+	"precipitation": 8,
+	"temperature": 8,
+	"WindDirection": 8,
+	"WindSpeed": 8,
+	"relativeHumidity": 8
+}
+
+###
+
+POST http://localhost:8080/ HTTP/1.1
+content-type: application/json
+ce-specversion: 1.0
+ce-type: ktwin.real.ngsi-ld-city-weatherobserved
+ce-source: ngsi-ld-city-weatherobserved-001
+ce-id: 491e0b8a-4896-4f70-a440-c89a248df4ea
+ce-time: 2023-10-16T18:54:04.924Z
+
+{
+	"atmosphericPressure": 10,
+	"dewpoint": 8,
+	"temperature": 8,
+	"illuminance": 8,
+	"precipitation": 8,
+	"relativeHumidity": 8,
+	"snowHeight": 8,
+	"solarRadiation": 8,
+	"streamGauge": 8,
+	"uVIndexMax": 8,
+	"visibility": 8,
+	"WindDirection": 8,
+	"WindSpeed": 8
 }

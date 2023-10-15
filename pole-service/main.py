@@ -52,7 +52,7 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     keventstore.update_twin_event(event)
 
     # Propagate to neighborhood
-    if air_quality_observed["SO2_level"] > 10:
+    if air_quality_observed["SO2_level"]["level"] in ("unhealthyForSensitiveGroups", "unhealthy", "veryUnhealthy", "hazardous"):
         payload = dict()
         payload["value"] = 1
         kcommand.execute_command(command_payload=payload, command="incrementPoleWithSO2Level", relationship_name="neighborhood", twin_instance=event.cloud_event["source"])
