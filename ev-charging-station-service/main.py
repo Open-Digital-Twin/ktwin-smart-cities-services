@@ -4,7 +4,10 @@ import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request
-from modules.ktwin import handle_request, handle_event, KTwinEvent, Twin, get_latest_twin_event, update_twin_event, get_parent_twins, push_to_virtual_twin
+import modules.ktwin.event as kevent
+import modules.ktwin.eventstore as keventstore
+import modules.ktwin.twingraph as twingraph
+import modules.ktwin.command as kcommand
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -19,18 +22,18 @@ app.logger.setLevel(logging.INFO)
 
 @app.route("/", methods=["POST"])
 def home():
-    event = handle_request(request)
+    event = kevent.handle_request(request)
 
     app.logger.info(
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    handle_event(request, 'ngsi-ld-city-ev-charging-station', handle_ev_charging_station_event)
+    kevent.handle_event(request, 'ngsi-ld-city-ev-charging-station', handle_ev_charging_station_event)
 
     # Return 204 - No-content
     return "", 204
 
-def handle_ev_charging_station_event(event: KTwinEvent):
+def handle_ev_charging_station_event(event: kevent.KTwinEvent):
     current_ev_charing_event_event = event.cloud_event.data
     
 
