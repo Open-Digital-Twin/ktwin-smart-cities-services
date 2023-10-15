@@ -1,21 +1,8 @@
 import os
 import json
-import requests
-from ..common import EVENT_TYPE_VIRTUAL_GENERATED, build_cloud_event, get_broker_url
-from cloudevents.http import to_structured
-
+from ..common import TwinGraph, TwinReference
 
 # Twin Graph methods
-class TwinReference:
-    def __init__(self, name: str, twin_interface: str , twin_instance: str) -> None:
-        self.name = name
-        self.twin_interface = twin_interface
-        self.twin_instance = twin_instance
-
-class TwinGraph:
-    def __init__(self, relationships: list[TwinReference]) -> None:
-        self.relationships = relationships
-
 
 def load_twin_graph() -> dict[TwinGraph]:
     ktwin_graph = os.getenv("KTWIN_GRAPH")
