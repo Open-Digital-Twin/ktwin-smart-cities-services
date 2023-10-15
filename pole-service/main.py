@@ -54,8 +54,8 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     # Propagate to neighborhood
     if air_quality_observed["SO2_level"]["level"] in ("unhealthyForSensitiveGroups", "unhealthy", "veryUnhealthy", "hazardous"):
         payload = dict()
-        payload["value"] = 1
-        kcommand.execute_command(command_payload=payload, command="incrementPoleWithSO2Level", relationship_name="neighborhood", twin_instance=event.cloud_event["source"])
+        payload["level"] = air_quality_observed["SO2_level"]["level"]
+        kcommand.execute_command(command_payload=payload, command="notifyunhealthyairquality", relationship_name="neighborhood", twin_instance=event.cloud_event["source"])
 
 def air_quality_level(density: float):
     if density is None or density < 0:
