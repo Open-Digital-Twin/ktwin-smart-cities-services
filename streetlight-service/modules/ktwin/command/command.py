@@ -8,13 +8,13 @@ from cloudevents.http import to_structured, from_http
 # command_payload: is the command payload that is going to be sent to the target interface.
 # relationship_name: the relationship name in the graph that will receive the command.
 # source: the source twin instance that is generating the event.
-def execute_command(command: str, command_payload: dict, relationship_name: str, twin_instance: str):
+def execute_command(command: str, command_payload: dict, relationship_name: str, twin_instance_source: str):
     twin_graph = load_twin_graph()
-    relationship = get_relationship_from_graph(twin_instance=twin_instance, relationship_name=relationship_name, twin_graph=twin_graph)
+    relationship = get_relationship_from_graph(twin_instance=twin_instance_source, relationship_name=relationship_name, twin_graph=twin_graph)
     if relationship is None:
         raise ValueError("Relationship not exists")
     ce_type = EVENT_TYPE_COMMAND_EXECUTED.format(relationship.twin_interface + "." + command)
-    ce_source = twin_instance
+    ce_source = twin_instance_source
     cloud_event = build_cloud_event(ce_type=ce_type, ce_source=ce_source, data=command_payload)
     headers, body = to_structured(cloud_event)
 
