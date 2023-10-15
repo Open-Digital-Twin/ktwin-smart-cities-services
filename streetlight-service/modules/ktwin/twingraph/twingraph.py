@@ -16,10 +16,10 @@ def load_twin_graph() -> TwinGraph:
     twin_instances_graph: dict[str, TwinInstanceGraph] = dict()
     for twin_instance_graph in graph_json["twinInstances"]:
         relationship_list: list[TwinInstanceReference] = list()
-        for twin_relationship in twin_instance_graph["relationships"]:
-            relationship = TwinInstanceReference(name=twin_relationship["name"], twin_interface=["interface"], twin_instance=twin_relationship["instance"])
-            relationship_list.append(relationship)
-
+        if "relationships" in twin_instance_graph:
+            for twin_relationship in twin_instance_graph["relationships"]:
+                relationship = TwinInstanceReference(name=twin_relationship["name"], interface=["interface"], instance=twin_relationship["instance"])
+                relationship_list.append(relationship)
         twin_instances_graph[twin_instance_graph["name"]] = TwinInstanceGraph(interface=twin_instance_graph["interface"], name=twin_instance_graph["name"], relationships=relationship_list)
 
     return TwinGraph(twin_instances_graph=twin_instances_graph)
