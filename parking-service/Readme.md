@@ -1,6 +1,6 @@
-# Parking Service
+# Parking Spot Service
 
-This service implements the Parking business logic for Smart Grids DTDL use case.
+This service implements the Parking Spot business logic for Smart Grids DTDL use case.
 
 ## Setup Virtual environment
 

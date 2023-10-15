@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+  parking-spot-service:
+    image: dev.local/parking-spot-service:0.1
+    container_name: parking-spot-service
+    ports:
+      - 8080:8080

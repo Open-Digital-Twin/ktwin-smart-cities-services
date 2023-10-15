@@ -27,38 +27,10 @@ def home():
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    kevent.handle_event(request, 'ngsi-ld-city-parkingspot', handle_parkingspot_event)
     kcommand.handle_command(request=request, twin_interface='ngsi-ld-city-offstreetparking', command='updateVehicleCount', callback=handle_update_vehicle_count_command)
 
     # Return 204 - No-content
     return "", 204
-
-# Set the Parking Spot to Occupied or free
-# Generate Event to Off Street Parking to update the number of occupied and free slots.
-def handle_parkingspot_event(event: kevent.KTwinEvent):
-    current_parkingspot_event = event.cloud_event.data
-
-    if "status" not in current_parkingspot_event:
-        app.logger.info(f"Event {event.cloud_event} has no status attribute value")
-    else:
-        parkingspot_status = current_parkingspot_event["status"]
-        parkingspot_category = current_parkingspot_event["category"]
-        keventstore.update_twin_event(event)
-
-        if parkingspot_category == "offStreet":
-            event_data = dict()
-            event_data["vehicleEntranceCount"]
-            if parkingspot_status == "occupied":
-                command_payload = dict()
-                command_payload["vehicleEntranceCount"] = 1
-                command_payload["vehicleExitCount"] = -1
-                kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
-
-            if parkingspot_status == "free":
-                command_payload = dict()
-                command_payload["vehicleEntranceCount"] = -1
-                command_payload["vehicleExitCount"] = 1
-                kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
 
 def handle_update_vehicle_count_command(command_event: kcommand.KTwinCommandEvent, target_twin_instance: ktwingraph.TwinInstanceReference):
     current_offstreetparking_data = command_event.cloud_event.data
