@@ -4,7 +4,9 @@ import sys
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request
-from modules.ktwin import handle_request, handle_event, KTwinEvent, Twin, get_latest_twin_event, update_twin_event, get_parent_twins, push_to_virtual_twin
+import modules.ktwin.event as kevent
+import modules.ktwin.eventstore as keventstore
+import modules.ktwin.command as kcommand
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -19,19 +21,19 @@ app.logger.setLevel(logging.INFO)
 
 @app.route("/", methods=["POST"])
 def home():
-    event = handle_request(request)
+    event = kevent.handle_request(request)
 
     app.logger.info(
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    handle_event(request, 'ngsi-ld-city-parkingspot', handle_parkingspot_event)
-    handle_event(request, 'ngsi-ld-city-offstreetparking', handle_offstreetparking_event)
+    kevent.handle_event(request, 'ngsi-ld-city-parkingspot', handle_parkingspot_event)
+    kevent.handle_event(request, 'ngsi-ld-city-offstreetparking', handle_offstreetparking_event)
 
     # Return 204 - No-content
     return "", 204
 
-def handle_parkingspot_event(event: KTwinEvent):
+def handle_parkingspot_event(event: kevent.KTwinEvent):
     current_parkingspot_event = event.cloud_event.data
 
     if "status" not in current_parkingspot_event:
@@ -39,31 +41,26 @@ def handle_parkingspot_event(event: KTwinEvent):
     else:
         parkingspot_status = current_parkingspot_event["status"]
         parkingspot_category = current_parkingspot_event["category"]
-        update_twin_event(event)
+        keventstore.update_twin_event(event)
 
         if parkingspot_category == "offStreet":
             event_data = dict()
             event_data["vehicleEntranceCount"]
             if parkingspot_status == "occupied":
-                event_data["vehicleEntranceCount"] = 1
-                event_data["vehicleExitCount"] = -1
-                app.logger.info(f"Generate event to decrement number of available slots")
+                command_payload = dict()
+                command_payload["vehicleEntranceCount"] = 1
+                command_payload["vehicleExitCount"] = -1
+                kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
 
             if parkingspot_status == "free":
-                event_data["vehicleEntranceCount"] = -1
-                event_data["vehicleExitCount"] = 1
-                app.logger.info(f"Generate event to increment number of available slots")
+                command_payload = dict()
+                command_payload["vehicleEntranceCount"] = -1
+                command_payload["vehicleExitCount"] = 1
+                kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
 
-            parent_twins = get_parent_twins()
-            if (parent_twins) > 0:
-                parent_twins
-            else:
-                app.logger.info(f"No available parent entities")
-
-
-def handle_offstreetparking_event(event: KTwinEvent):
+def handle_offstreetparking_event(event: kevent.KTwinEvent):
     current_offstreetparking_event = event.cloud_event.data
-    latest_offstreetparking_event = get_latest_twin_event(event.twin_interface, event.twin_instance)
+    latest_offstreetparking_event = keventstore.get_latest_twin_event(event.twin_interface, event.twin_instance)
     if latest_offstreetparking_event is None:
         latest_offstreetparking_event = current_offstreetparking_event
 
@@ -86,7 +83,7 @@ def handle_offstreetparking_event(event: KTwinEvent):
         current_offstreetparking_event["vehicleExitCount"] = current_offstreetparking_event["vehicleExitCount"] + latest_vehicleExitCount
         event.cloud_event.data = current_offstreetparking_event
 
-    update_twin_event(event)
+    keventstore.update_twin_event(event)
 
 if __name__ == "__main__":
     app.logger.info("Starting up server...")
