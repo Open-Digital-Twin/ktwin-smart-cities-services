@@ -42,12 +42,19 @@ class KTwinCommandEvent:
         self.twin_instance = cloud_event["source"]
 
 # Twin Graph Components
-class TwinReference:
-    def __init__(self, name: str, twin_interface: str , twin_instance: str) -> None:
+
+class TwinInstanceReference:
+    def __init__(self, name: str, interface: str, instance: str):
         self.name = name
-        self.twin_interface = twin_interface
-        self.twin_instance = twin_instance
+        self.interface = interface
+        self.instance = instance
+
+class TwinInstanceGraph:
+    def __init__(self, name: str, interface: str, relationships: list[TwinInstanceReference]):
+        self.name = name
+        self.interface = interface
+        self.relationships = relationships
 
 class TwinGraph:
-    def __init__(self, relationships: list[TwinReference]) -> None:
-        self.relationships = relationships
+    def __init__(self, twin_instances_graph: dict[str, TwinInstanceGraph]):
+        self.twin_instances_graph = twin_instances_graph
