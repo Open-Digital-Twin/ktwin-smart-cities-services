@@ -7,6 +7,7 @@ from flask import Flask, request
 import modules.ktwin.event as kevent
 import modules.ktwin.eventstore as keventstore
 import modules.ktwin.command as kcommand
+import modules.ktwin.twingraph as ktwingraph
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -27,7 +28,7 @@ def home():
     )
 
     kevent.handle_event(request, 'ngsi-ld-city-parkingspot', handle_parkingspot_event)
-    kevent.handle_event(request, 'ngsi-ld-city-offstreetparking', handle_offstreetparking_event)
+    kcommand.handle_command(request=request, twin_interface='ngsi-ld-city-offstreetparking', command='updateVehicleCount', callback=handle_update_vehicle_count_command)
 
     # Return 204 - No-content
     return "", 204
@@ -59,9 +60,9 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
                 command_payload["vehicleExitCount"] = 1
                 kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
 
-def handle_offstreetparking_event(event: kevent.KTwinEvent):
-    current_offstreetparking_data = event.cloud_event.data
-    latest_offstreetparking_event = keventstore.get_latest_twin_event(event.twin_interface, event.twin_instance)
+def handle_update_vehicle_count_command(command_event: kcommand.KTwinCommandEvent, target_twin_instance: ktwingraph.TwinReference):
+    current_offstreetparking_data = command_event.cloud_event.data
+    latest_offstreetparking_event = keventstore.get_latest_twin_event(twin_interface=target_twin_instance.twin_interface, twin_instance=target_twin_instance.twin_instance)
     latest_offstreetparking_data = None
 
     if latest_offstreetparking_event is None:
@@ -70,25 +71,25 @@ def handle_offstreetparking_event(event: kevent.KTwinEvent):
         latest_offstreetparking_data = latest_offstreetparking_event.cloud_event.data
 
     if "vehicleEntranceCount" not in current_offstreetparking_data:
-        app.logger.info(f"Event {event.cloud_event} has no status attribute value")
+        app.logger.info(f"Event {command_event.cloud_event} has no status attribute value")
     else:
         latest_vehicleEntranceCount = 0
         if "vehicleEntranceCount" in latest_offstreetparking_data:
             latest_vehicleEntranceCount = latest_offstreetparking_data["vehicleEntranceCount"]
         current_offstreetparking_data["vehicleEntranceCount"] = current_offstreetparking_data["vehicleEntranceCount"] + latest_vehicleEntranceCount
-        event.cloud_event.data = current_offstreetparking_data
+        command_event.cloud_event.data = current_offstreetparking_data
     
-    current_offstreetparking_data = event.cloud_event.data
+    current_offstreetparking_data = command_event.cloud_event.data
     if "vehicleExitCount" not in current_offstreetparking_data:
-        app.logger.info(f"Event {event.cloud_event} has no status attribute value")
+        app.logger.info(f"Event {command_event.cloud_event} has no status attribute value")
     else:
         latest_vehicleExitCount = 0
         if "vehicleExitCount" in latest_offstreetparking_data:
             latest_vehicleExitCount = latest_offstreetparking_data["vehicleExitCount"]
         current_offstreetparking_data["vehicleExitCount"] = current_offstreetparking_data["vehicleExitCount"] + latest_vehicleExitCount
-        event.cloud_event.data = current_offstreetparking_data
+        command_event.cloud_event.data = current_offstreetparking_data
 
-    keventstore.update_twin_event(event)
+    keventstore.update_twin_event(command_event)
 
 if __name__ == "__main__":
     app.logger.info("Starting up server...")

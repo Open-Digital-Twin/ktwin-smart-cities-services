@@ -40,3 +40,14 @@ class KTwinCommandEvent:
         if len(ce_type_split) > 3:
             self.command = ce_type_split[3]
         self.twin_instance = cloud_event["source"]
+
+# Twin Graph Components
+class TwinReference:
+    def __init__(self, name: str, twin_interface: str , twin_instance: str) -> None:
+        self.name = name
+        self.twin_interface = twin_interface
+        self.twin_instance = twin_instance
+
+class TwinGraph:
+    def __init__(self, relationships: list[TwinReference]) -> None:
+        self.relationships = relationships
