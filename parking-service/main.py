@@ -32,6 +32,8 @@ def home():
     # Return 204 - No-content
     return "", 204
 
+# Set the Parking Spot to Occupied or free
+# Generate Event to Off Street Parking to update the number of occupied and free slots.
 def handle_parkingspot_event(event: kevent.KTwinEvent):
     current_parkingspot_event = event.cloud_event.data
 
@@ -58,29 +60,33 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
                 kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
 
 def handle_offstreetparking_event(event: kevent.KTwinEvent):
-    current_offstreetparking_event = event.cloud_event.data
+    current_offstreetparking_data = event.cloud_event.data
     latest_offstreetparking_event = keventstore.get_latest_twin_event(event.twin_interface, event.twin_instance)
-    if latest_offstreetparking_event is None:
-        latest_offstreetparking_event = current_offstreetparking_event
+    latest_offstreetparking_data = None
 
-    if "vehicleEntranceCount" not in current_offstreetparking_event:
+    if latest_offstreetparking_event is None:
+        latest_offstreetparking_data = current_offstreetparking_data
+    else:
+        latest_offstreetparking_data = latest_offstreetparking_event.cloud_event.data
+
+    if "vehicleEntranceCount" not in current_offstreetparking_data:
         app.logger.info(f"Event {event.cloud_event} has no status attribute value")
     else:
         latest_vehicleEntranceCount = 0
-        if "vehicleEntranceCount" in latest_offstreetparking_event:
-            latest_vehicleEntranceCount = latest_offstreetparking_event["vehicleEntranceCount"]
-        current_offstreetparking_event["vehicleEntranceCount"] = current_offstreetparking_event["vehicleEntranceCount"] + latest_vehicleEntranceCount
-        event.cloud_event = current_offstreetparking_event
+        if "vehicleEntranceCount" in latest_offstreetparking_data:
+            latest_vehicleEntranceCount = latest_offstreetparking_data["vehicleEntranceCount"]
+        current_offstreetparking_data["vehicleEntranceCount"] = current_offstreetparking_data["vehicleEntranceCount"] + latest_vehicleEntranceCount
+        event.cloud_event.data = current_offstreetparking_data
     
-    current_offstreetparking_event = event.cloud_event.data
-    if "vehicleExitCount" not in current_offstreetparking_event:
+    current_offstreetparking_data = event.cloud_event.data
+    if "vehicleExitCount" not in current_offstreetparking_data:
         app.logger.info(f"Event {event.cloud_event} has no status attribute value")
     else:
         latest_vehicleExitCount = 0
-        if "vehicleExitCount" in latest_offstreetparking_event:
-            latest_vehicleExitCount = latest_offstreetparking_event["vehicleExitCount"]
-        current_offstreetparking_event["vehicleExitCount"] = current_offstreetparking_event["vehicleExitCount"] + latest_vehicleExitCount
-        event.cloud_event.data = current_offstreetparking_event
+        if "vehicleExitCount" in latest_offstreetparking_data:
+            latest_vehicleExitCount = latest_offstreetparking_data["vehicleExitCount"]
+        current_offstreetparking_data["vehicleExitCount"] = current_offstreetparking_data["vehicleExitCount"] + latest_vehicleExitCount
+        event.cloud_event.data = current_offstreetparking_data
 
     keventstore.update_twin_event(event)
 
