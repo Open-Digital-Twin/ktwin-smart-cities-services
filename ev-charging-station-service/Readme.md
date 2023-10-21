@@ -45,31 +45,3 @@ kind load docker-image dev.local/open-digital-twin/ktwin-ev-charging-station-ser
 ```bash
 docker compose up -d
 ```
-
-## Example of cloud payload
-
-### Power State
-
-Expected behavior:
-
-```sh
-curl --request POST \
-  --url http://localhost:8080/ \
-  --header 'Content-Type: application/json' \
-  --header 'ce-id: 123' \
-  --header 'ce-source: ev-charging-station-001' \
-  --header 'ce-specversion: 1.0' \
-  --header 'ce-time: 2021-10-16T18:54:04.924Z' \
-  --header 'ce-type: ktwin.real.ev-charging-station' \
-  --data '{
-    "powerState": "on"
-}'
-```
-
-The following object is stored in event store:
-
-```json
-{
-    "powerState": "on"
-}
-```
