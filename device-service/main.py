@@ -42,17 +42,21 @@ def handle_device_event(event: kevent.KTwinEvent):
     device_event_data = event.cloud_event.data
     device_event_data["dateObserved"] = datetime.datetime.now().isoformat()
 
-    if device_event_data["batteryLevel"] < BATTERY_THRESHOLD:
-        # Propagate event to real device to measure in low frequency
-        device_event_data["measurementFrequency"] = LOW_FREQUENCY
-        kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
-    elif device_event_data["batteryLevel"] > BATTERY_THRESHOLD and device_event_data["measurementFrequency"] == LOW_FREQUENCY:
-        # Propagate event to real device to measure in high frequency
-        device_event_data["measurementFrequency"] = HIGH_FREQUENCY
-        kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
+    if "batteryLevel" in device_event_data:
+        if device_event_data["batteryLevel"] < BATTERY_THRESHOLD:
+            # Propagate event to real device to measure in low frequency
+            device_event_data["measurementFrequency"] = LOW_FREQUENCY
+            kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
+        elif device_event_data["batteryLevel"] > BATTERY_THRESHOLD and "measurementFrequency" in device_event_data and device_event_data["measurementFrequency"] == LOW_FREQUENCY:
+            # Propagate event to real device to measure in high frequency
+            device_event_data["measurementFrequency"] = HIGH_FREQUENCY
+            kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
 
-    event.cloud_event.data = device_event_data
-    keventstore.update_twin_event(event)
+        event.cloud_event.data = device_event_data
+        keventstore.update_twin_event(event)
+
+    else:
+        app.logger.info("Battery level was not provided")
 
 if __name__ == "__main__":
     app.logger.info("Starting up server...")
