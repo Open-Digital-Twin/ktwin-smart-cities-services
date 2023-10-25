@@ -1,9 +1,9 @@
 import os
 from cloudevents.http import CloudEvent
 
-EVENT_TYPE_REAL_GENERATED = "ktwin.real.%s"
-EVENT_TYPE_VIRTUAL_GENERATED = "ktwin.virtual.%s"
-EVENT_TYPE_COMMAND_EXECUTED = "ktwin.command.%s"
+EVENT_TYPE_REAL_GENERATED = "ktwin.real.{0}"
+EVENT_TYPE_VIRTUAL_GENERATED = "ktwin.virtual.{0}"
+EVENT_TYPE_COMMAND_EXECUTED = "ktwin.command.{0}"
 
 def get_event_store_url():
     return os.getenv("KTWIN_EVENT_STORE")

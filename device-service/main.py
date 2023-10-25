@@ -41,15 +41,23 @@ def handle_device_event(event: kevent.KTwinEvent):
 
     device_event_data = event.cloud_event.data
     device_event_data["dateObserved"] = datetime.datetime.now().isoformat()
+    
+    app.logger.info(f"Twin Instance: {event.twin_instance} | Twin Interface: {event.twin_interface} | {device_event_data}")
 
     if "batteryLevel" in device_event_data:
         if device_event_data["batteryLevel"] < BATTERY_THRESHOLD:
             # Propagate event to real device to measure in low frequency
             device_event_data["measurementFrequency"] = LOW_FREQUENCY
+            app.logger.info(
+                f"Battery Level below threshold. Sending event to real instance: {event.twin_instance}"
+            )
             kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
         elif device_event_data["batteryLevel"] > BATTERY_THRESHOLD and "measurementFrequency" in device_event_data and device_event_data["measurementFrequency"] == LOW_FREQUENCY:
             # Propagate event to real device to measure in high frequency
             device_event_data["measurementFrequency"] = HIGH_FREQUENCY
+            app.logger.info(
+                f"Battery Level above threshold. Sending event to real instance: {event.twin_instance}"
+            )
             kevent.send_to_real_twin(twin_interface=event.twin_interface, twin_instance=event.twin_instance, data=device_event_data)
 
         event.cloud_event.data = device_event_data
