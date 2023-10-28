@@ -18,23 +18,20 @@ def load_twin_graph() -> TwinGraph:
         relationship_list: list[TwinInstanceReference] = list()
         if "relationships" in twin_instance_graph:
             for twin_relationship in twin_instance_graph["relationships"]:
-                relationship = TwinInstanceReference(name=twin_relationship["name"], interface=["interface"], instance=twin_relationship["instance"])
+                relationship = TwinInstanceReference(name=twin_relationship["name"], interface=twin_relationship["interface"], instance=twin_relationship["instance"])
                 relationship_list.append(relationship)
         twin_instances_graph[twin_instance_graph["name"]] = TwinInstanceGraph(interface=twin_instance_graph["interface"], name=twin_instance_graph["name"], relationships=relationship_list)
 
     return TwinGraph(twin_instances_graph=twin_instances_graph)
 
 # Get the Graph relationship by name and instance
-def get_relationship_from_graph(twin_instance: str, relationship_name: str, twin_graph: dict[str, TwinGraph]) -> TwinInstanceReference:
-    if "twin_instances" not in twin_graph:
-        return None
-
-    for instance in twin_graph.twin_instances:
-        if instance.name == twin_instance:
-            for relationship in instance.relationships:        
+def get_relationship_from_graph(twin_instance: str, relationship_name: str, twin_graph: TwinGraph) -> TwinInstanceReference:
+    for instance in twin_graph.twin_instances_graph:
+        twin_instance_graph = twin_graph.twin_instances_graph[instance]
+        if twin_instance_graph.name == twin_instance:
+            for relationship in twin_instance_graph.relationships:
                 if relationship.name == relationship_name:
                     return relationship
-            return None
 
     return None
 

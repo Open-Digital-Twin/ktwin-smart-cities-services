@@ -62,13 +62,21 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
                 command_payload = dict()
                 command_payload["vehicleEntranceCount"] = 1
                 command_payload["vehicleExitCount"] = -1
-                kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
+                try:
+                    kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
+                except Exception as error:
+                    app.logger.error(f"Error to execute command updateVehicleCount in relationship refOffStreetParking in TwinInstance {event.twin_instance}")
+                    app.logger.error(error)
 
             if parkingspot_status == "free":
                 command_payload = dict()
                 command_payload["vehicleEntranceCount"] = -1
                 command_payload["vehicleExitCount"] = 1
-                kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
+                try:
+                    kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
+                except Exception as error:
+                    app.logger.error(f"Error to execute command updateVehicleCount in relationship refOffStreetParking in TwinInstance {event.twin_instance}")
+                    app.logger.error(error)
 
 if __name__ == "__main__":
     app.logger.info("Starting up server...")
