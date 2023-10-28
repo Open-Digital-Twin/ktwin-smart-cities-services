@@ -41,13 +41,13 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
         app.logger.info(f"Event {event.cloud_event} has no status attribute value")
     else:
         parkingspot_status = current_parkingspot_event["status"]
-        parkingspot_category = current_parkingspot_event["category"]
 
-        if "category" not in parkingspot_category:
+        if "category" not in current_parkingspot_event:
             latest_parkingspot_event = keventstore.get_latest_twin_event(twin_instance=event.twin_instance, twin_interface=event.twin_interface)
-            
-            if "category" not in latest_parkingspot_event.cloud_event.data:
+
+            if latest_parkingspot_event is None or "category" not in latest_parkingspot_event.cloud_event.data:
                 # If not provided, the default is offStreet
+                # TODO: set the category in the moment creation
                 parkingspot_category = "offStreet"
             else:
                 parkingspot_category = latest_parkingspot_event["category"]
@@ -58,8 +58,6 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
         keventstore.update_twin_event(event)
 
         if parkingspot_category == "offStreet":
-            event_data = dict()
-            event_data["vehicleEntranceCount"]
             if parkingspot_status == "occupied":
                 command_payload = dict()
                 command_payload["vehicleEntranceCount"] = 1
