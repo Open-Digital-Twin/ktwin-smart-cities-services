@@ -48,10 +48,10 @@ def handle_streetlight_event(event: kevent.KTwinEvent):
             if current_power_state_value == latest_power_state_value:
                 if current_power_state_value == "on":
                     date_last_switching_on = latest_streetlight_event.cloud_event.data["dateLastSwitchingOn"]
-                    defect = is_with_defect(datetime_now=datetime_now, date_last_switching=date_last_switching_on)
+                    defect = is_with_defect(datetime_now=datetime_now, date_last_switching=datetime.datetime.fromisoformat(date_last_switching_on))
                 elif current_power_state_value == "off":
                     date_last_switching_off = latest_streetlight_event.cloud_event.data["dateLastSwitchingOff"]
-                    defect = is_with_defect(datetime_now=datetime_now, date_last_switching=date_last_switching_off)
+                    defect = is_with_defect(datetime_now=datetime_now, date_last_switching=datetime.datetime.fromisoformat(date_last_switching_off))
 
                 if defect:
                     event.cloud_event.data["powerState"] = "defectiveLamp"
