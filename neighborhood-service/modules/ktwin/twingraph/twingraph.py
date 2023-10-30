@@ -8,18 +8,17 @@ from ..common import TwinGraph, TwinInstanceReference, TwinInstanceGraph
 def load_twin_graph() -> TwinGraph:
     ktwin_graph_url = os.getenv("KTWIN_GRAPH_URL")
     response = requests.get(ktwin_graph_url)
+
+    if response.status_code != 200:
+        raise Exception("Error while calling service status_code: " + response.status_code)
+
     ktwin_graph = response.json()
 
-    if ktwin_graph is None:
-        return ktwin_graph
-
-    graph_json = json.loads(ktwin_graph)
-
-    if "twinInstances" not in graph_json:
+    if "twinInstances" not in ktwin_graph:
         return dict()
 
     twin_instances_graph: dict[str, TwinInstanceGraph] = dict()
-    for twin_instance_graph in graph_json["twinInstances"]:
+    for twin_instance_graph in ktwin_graph["twinInstances"]:
         relationship_list: list[TwinInstanceReference] = list()
         if "relationships" in twin_instance_graph:
             for twin_relationship in twin_instance_graph["relationships"]:
