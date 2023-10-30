@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 from flask import Flask, request
 import modules.ktwin.event as kevent
 import modules.ktwin.eventstore as keventstore
-import modules.ktwin.twingraph as twingraph
-import modules.ktwin.command as kcommand
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
