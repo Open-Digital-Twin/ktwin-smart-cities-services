@@ -1,5 +1,4 @@
 import os
-import datetime
 import sys
 import logging
 from dotenv import load_dotenv
@@ -18,6 +17,8 @@ handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
+
+ktwin_graph = ktwingraph.load_twin_graph()
 
 @app.route("/", methods=["POST"])
 def home():
@@ -63,7 +64,7 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
                 command_payload["vehicleEntranceCount"] = 1
                 command_payload["vehicleExitCount"] = -1
                 try:
-                    kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
+                    kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance, twin_graph=ktwin_graph)
                 except Exception as error:
                     app.logger.error(f"Error to execute command updateVehicleCount in relationship refOffStreetParking in TwinInstance {event.twin_instance}")
                     app.logger.error(error)
@@ -73,7 +74,7 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
                 command_payload["vehicleEntranceCount"] = -1
                 command_payload["vehicleExitCount"] = 1
                 try:
-                    kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance)
+                    kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance, twin_graph=ktwin_graph)
                 except Exception as error:
                     app.logger.error(f"Error to execute command updateVehicleCount in relationship refOffStreetParking in TwinInstance {event.twin_instance}")
                     app.logger.error(error)

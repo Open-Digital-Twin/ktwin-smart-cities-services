@@ -1,13 +1,18 @@
 import os
 import json
+import requests
 from ..common import TwinGraph, TwinInstanceReference, TwinInstanceGraph
 
 # Twin Graph methods
 
 def load_twin_graph() -> TwinGraph:
-    ktwin_graph = os.getenv("KTWIN_GRAPH")
+    ktwin_graph_url = os.getenv("KTWIN_GRAPH_URL")
+    response = requests.get(ktwin_graph_url)
+    ktwin_graph = response.json()
+
     if ktwin_graph is None:
         return ktwin_graph
+
     graph_json = json.loads(ktwin_graph)
 
     if "twinInstances" not in graph_json:
