@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask, request
 import modules.ktwin.event as kevent
 import modules.ktwin.eventstore as keventstore
-import modules.ktwin.twingraph as twingraph
+import modules.ktwin.twingraph as ktwingraph
 import modules.ktwin.command as kcommand
 
 if os.getenv("ENV") == "local":
@@ -19,7 +19,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
-twin_graph = twingraph.load_twin_graph()
+ktwin_graph = ktwingraph.load_twin_graph()
 
 @app.route("/", methods=["POST"])
 def home():
@@ -55,7 +55,7 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     if air_quality_observed["SO2_level"]["level"] in ("unhealthyForSensitiveGroups", "unhealthy", "veryUnhealthy", "hazardous"):
         payload = dict()
         payload["level"] = air_quality_observed["SO2_level"]["level"]
-        kcommand.execute_command(command_payload=payload, command="notifyunhealthyairquality", relationship_name="neighborhood", twin_instance=event.cloud_event["source"])
+        kcommand.execute_command(command_payload=payload, command="notifyunhealthyairquality", relationship_name="neighborhood", twin_instance=event.cloud_event["source"], twin_graph=ktwin_graph)
 
 def air_quality_level(density: float):
     if density is None or density < 0:
