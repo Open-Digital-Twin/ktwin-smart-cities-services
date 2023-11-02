@@ -6,13 +6,16 @@ from ..common import TwinGraph, TwinInstanceReference, TwinInstanceGraph
 # Twin Graph methods
 
 def load_twin_graph() -> TwinGraph:
-    ktwin_graph_url = os.getenv("KTWIN_GRAPH_URL")
-    response = requests.get(ktwin_graph_url)
+    if os.getenv("ENV") == "local":
+        ktwin_graph = json.loads(os.getenv("KTWIN_GRAPH"))
+    else:
+        ktwin_graph_url = os.getenv("KTWIN_GRAPH_URL")
+        response = requests.get(ktwin_graph_url)
 
-    if response.status_code != 200:
-        raise Exception("Error while calling service status_code: " + response.status_code)
+        if response.status_code != 200:
+            raise Exception("Error while calling service status_code: " + response.status_code)
 
-    ktwin_graph = response.json()
+        ktwin_graph = response.json()
 
     if "twinInstances" not in ktwin_graph:
         return dict()
