@@ -21,7 +21,7 @@ ce-time: 2023-10-16T18:54:04.924Z
 	"CDDensity": 8,
     "NODensity": 8,
 	"NO2Density": 8,
-	"O3Density": 8,
+	"O3Density": 57,
 	"PBDensity": 8,
 	"SH2Density": 8,
 	"precipitation": 8,
