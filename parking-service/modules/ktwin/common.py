@@ -1,4 +1,5 @@
 import os
+import json
 from cloudevents.http import CloudEvent
 
 EVENT_TYPE_REAL_GENERATED = "ktwin.real.{0}"
@@ -58,3 +59,6 @@ class TwinInstanceGraph:
 class TwinGraph:
     def __init__(self, twin_instances_graph: dict[str, TwinInstanceGraph]):
         self.twin_instances_graph = twin_instances_graph
+
+    def to_string(self):
+        return json.dumps(self.twin_instances_graph)
