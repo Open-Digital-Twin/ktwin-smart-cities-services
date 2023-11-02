@@ -38,43 +38,43 @@ def home():
 
 def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     air_quality_observed = event.cloud_event.data
-    air_quality_observed["CO2_aqi_level"] = air_quality_level(air_quality_observed["CO2Density"])
-    air_quality_observed["NO_aqi_level"] = air_quality_level(air_quality_observed["NODensity"])
-    air_quality_observed["C6H6_aqi_level"] = air_quality_level(air_quality_observed["C6H6Density"])
-    air_quality_observed["CD_aqi_level"] = air_quality_level(air_quality_observed["CDDensity"])
-    air_quality_observed["PB_aqi_level"] = air_quality_level(air_quality_observed["PBDensity"])
-    air_quality_observed["SH2_aqi_level"] = air_quality_level(air_quality_observed["SH2Density"])
+    air_quality_observed["CO2AqiLevel"] = air_quality_level(air_quality_observed["CO2Density"])
+    air_quality_observed["NOAqiLevel"] = air_quality_level(air_quality_observed["NODensity"])
+    air_quality_observed["C6H6AqiLevel"] = air_quality_level(air_quality_observed["C6H6Density"])
+    air_quality_observed["CDAqiLevel"] = air_quality_level(air_quality_observed["CDDensity"])
+    air_quality_observed["PBAqiLevel"] = air_quality_level(air_quality_observed["PBDensity"])
+    air_quality_observed["SH2AqiLevel"] = air_quality_level(air_quality_observed["SH2Density"])
 
-    air_quality_observed["CO_aqi_level"] = AirQualityIndex.COAirQualityIndex(concentration=air_quality_observed["CODensity"]).get_air_quality_category()
-    air_quality_observed["PM10_aqi_level"] = AirQualityIndex.PM10AirQualityIndex(concentration=air_quality_observed["PM10Density"]).get_air_quality_category()
-    air_quality_observed["PM25_aqi_level"] = AirQualityIndex.PM25AirQualityIndex(concentration=air_quality_observed["PM25Density"]).get_air_quality_category()
-    air_quality_observed["SO2_aqi_level"] = AirQualityIndex.PM25AirQualityIndex(concentration=air_quality_observed["SO2Density"]).get_air_quality_category()
-    air_quality_observed["O3_aqi_level"] = AirQualityIndex.O3AirQualityIndex(concentration=air_quality_observed["O3Density"]).get_air_quality_category()
+    air_quality_observed["COAqiLevel"] = AirQualityIndex.COAirQualityIndex(concentration=air_quality_observed["CODensity"]).get_air_quality_category()
+    air_quality_observed["PM10AqiLevel"] = AirQualityIndex.PM10AirQualityIndex(concentration=air_quality_observed["PM10Density"]).get_air_quality_category()
+    air_quality_observed["PM25AqiLevel"] = AirQualityIndex.PM25AirQualityIndex(concentration=air_quality_observed["PM25Density"]).get_air_quality_category()
+    air_quality_observed["SO2AqiLevel"] = AirQualityIndex.PM25AirQualityIndex(concentration=air_quality_observed["SO2Density"]).get_air_quality_category()
+    air_quality_observed["O3AqiLevel"] = AirQualityIndex.O3AirQualityIndex(concentration=air_quality_observed["O3Density"]).get_air_quality_category()
 
     keventstore.update_twin_event(event)
 
     all_levels = list()
-    all_levels.append(air_quality_observed["CO_aqi_level"])
-    all_levels.append(air_quality_observed["PM10_aqi_level"])
-    all_levels.append(air_quality_observed["PM25_aqi_level"])
-    all_levels.append(air_quality_observed["SO2_aqi_level"])
-    all_levels.append(air_quality_observed["O3_aqi_level"])
+    all_levels.append(air_quality_observed["COAqiLevel"])
+    all_levels.append(air_quality_observed["PM10AqiLevel"])
+    all_levels.append(air_quality_observed["PM25AqiLevel"])
+    all_levels.append(air_quality_observed["SO2AqiLevel"])
+    all_levels.append(air_quality_observed["O3AqiLevel"])
 
     # The largest or "dominant" AQI value is reported for the location and propagated to the neighborhood.
 
     payload = dict()
     if AirQualityIndex.AQICategory.HAZARDOUS in all_levels:
-        payload["aqi_level"] = AirQualityIndex.AQICategory.HAZARDOUS
+        payload["aqiLevel"] = AirQualityIndex.AQICategory.HAZARDOUS
     elif AirQualityIndex.AQICategory.VERY_UNHEALTHY in all_levels:
-        payload["aqi_level"] = AirQualityIndex.AQICategory.VERY_UNHEALTHY
+        payload["aqiLevel"] = AirQualityIndex.AQICategory.VERY_UNHEALTHY
     elif AirQualityIndex.AQICategory.UNHEALTHY in all_levels:
-        payload["aqi_level"] = AirQualityIndex.AQICategory.UNHEALTHY
+        payload["aqiLevel"] = AirQualityIndex.AQICategory.UNHEALTHY
     elif AirQualityIndex.AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS in all_levels:
-        payload["aqi_level"] = AirQualityIndex.AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS
+        payload["aqiLevel"] = AirQualityIndex.AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS
     elif AirQualityIndex.AQICategory.MODERATE in all_levels:
-        payload["aqi_level"] = AirQualityIndex.AQICategory.MODERATE
+        payload["aqiLevel"] = AirQualityIndex.AQICategory.MODERATE
     else:
-        payload["aqi_level"] = AirQualityIndex.AQICategory.GOOD
+        payload["aqiLevel"] = AirQualityIndex.AQICategory.GOOD
 
     kcommand.execute_command(command_payload=payload, command="updateairquality", relationship_name="neighborhood", twin_instance=event.cloud_event["source"], twin_graph=ktwin_graph)
 
