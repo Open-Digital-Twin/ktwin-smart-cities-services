@@ -22,6 +22,12 @@ class KTwinEvent:
             self.twin_interface = ce_type_split[2]
         self.twin_instance = cloud_event["source"]
 
+    def set_event(self, twin_interface: str, twin_instance: str, data):
+        self.twin_interface = twin_interface
+        self.twin_instance = twin_instance
+        ce_type = "ktwin." + self.twin_interface
+        self.cloud_event = build_cloud_event(ce_type=ce_type, ce_source=twin_instance, data=data)
+
 def build_cloud_event(ce_type, ce_source, data):
     attributes = {
         "type" : ce_type,

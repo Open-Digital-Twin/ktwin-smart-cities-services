@@ -62,7 +62,6 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
             if parkingspot_status == "occupied":
                 command_payload = dict()
                 command_payload["vehicleEntranceCount"] = 1
-                command_payload["vehicleExitCount"] = -1
                 try:
                     kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance, twin_graph=ktwin_graph)
                 except Exception as error:
@@ -71,7 +70,6 @@ def handle_parkingspot_event(event: kevent.KTwinEvent):
 
             if parkingspot_status == "free":
                 command_payload = dict()
-                command_payload["vehicleEntranceCount"] = -1
                 command_payload["vehicleExitCount"] = 1
                 try:
                     kcommand.execute_command(command="updateVehicleCount", command_payload=command_payload, relationship_name="refOffStreetParking", twin_instance_source=event.twin_instance, twin_graph=ktwin_graph)
