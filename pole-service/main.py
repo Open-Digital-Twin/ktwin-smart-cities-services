@@ -8,7 +8,7 @@ import modules.ktwin.event as kevent
 import modules.ktwin.eventstore as keventstore
 import modules.ktwin.twingraph as ktwingraph
 import modules.ktwin.command as kcommand
-import AirQualityIndex
+import modules.airqualityindex as aqi
 
 if os.getenv("ENV") == "local":
     load_dotenv('local.env')
@@ -45,11 +45,11 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     air_quality_observed["PBAqiLevel"] = air_quality_level(air_quality_observed["PBDensity"])
     air_quality_observed["SH2AqiLevel"] = air_quality_level(air_quality_observed["SH2Density"])
 
-    air_quality_observed["COAqiLevel"] = AirQualityIndex.COAirQualityIndex(concentration=air_quality_observed["CODensity"]).get_air_quality_category()
-    air_quality_observed["PM10AqiLevel"] = AirQualityIndex.PM10AirQualityIndex(concentration=air_quality_observed["PM10Density"]).get_air_quality_category()
-    air_quality_observed["PM25AqiLevel"] = AirQualityIndex.PM25AirQualityIndex(concentration=air_quality_observed["PM25Density"]).get_air_quality_category()
-    air_quality_observed["SO2AqiLevel"] = AirQualityIndex.PM25AirQualityIndex(concentration=air_quality_observed["SO2Density"]).get_air_quality_category()
-    air_quality_observed["O3AqiLevel"] = AirQualityIndex.O3AirQualityIndex(concentration=air_quality_observed["O3Density"]).get_air_quality_category()
+    air_quality_observed["COAqiLevel"] = aqi.COAirQualityIndex(concentration=air_quality_observed["CODensity"]).get_air_quality_category()
+    air_quality_observed["PM10AqiLevel"] = aqi.PM10AirQualityIndex(concentration=air_quality_observed["PM10Density"]).get_air_quality_category()
+    air_quality_observed["PM25AqiLevel"] = aqi.PM25AirQualityIndex(concentration=air_quality_observed["PM25Density"]).get_air_quality_category()
+    air_quality_observed["SO2AqiLevel"] = aqi.PM25AirQualityIndex(concentration=air_quality_observed["SO2Density"]).get_air_quality_category()
+    air_quality_observed["O3AqiLevel"] = aqi.O3AirQualityIndex(concentration=air_quality_observed["O3Density"]).get_air_quality_category()
 
     keventstore.update_twin_event(event)
 
@@ -63,18 +63,18 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     # The largest or "dominant" AQI value is reported for the location and propagated to the neighborhood.
 
     payload = dict()
-    if AirQualityIndex.AQICategory.HAZARDOUS in all_levels:
-        payload["aqiLevel"] = AirQualityIndex.AQICategory.HAZARDOUS
-    elif AirQualityIndex.AQICategory.VERY_UNHEALTHY in all_levels:
-        payload["aqiLevel"] = AirQualityIndex.AQICategory.VERY_UNHEALTHY
-    elif AirQualityIndex.AQICategory.UNHEALTHY in all_levels:
-        payload["aqiLevel"] = AirQualityIndex.AQICategory.UNHEALTHY
-    elif AirQualityIndex.AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS in all_levels:
-        payload["aqiLevel"] = AirQualityIndex.AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS
-    elif AirQualityIndex.AQICategory.MODERATE in all_levels:
-        payload["aqiLevel"] = AirQualityIndex.AQICategory.MODERATE
+    if aqi.AQICategory.HAZARDOUS in all_levels:
+        payload["aqiLevel"] = aqi.AQICategory.HAZARDOUS
+    elif aqi.AQICategory.VERY_UNHEALTHY in all_levels:
+        payload["aqiLevel"] = aqi.AQICategory.VERY_UNHEALTHY
+    elif aqi.AQICategory.UNHEALTHY in all_levels:
+        payload["aqiLevel"] = aqi.AQICategory.UNHEALTHY
+    elif aqi.AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS in all_levels:
+        payload["aqiLevel"] = aqi.AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS
+    elif aqi.AQICategory.MODERATE in all_levels:
+        payload["aqiLevel"] = aqi.AQICategory.MODERATE
     else:
-        payload["aqiLevel"] = AirQualityIndex.AQICategory.GOOD
+        payload["aqiLevel"] = aqi.AQICategory.GOOD
 
     try:
         kcommand.execute_command(command_payload=payload, command="updateairqualityindex", relationship_name="neighborhood", twin_instance=event.cloud_event["source"], twin_graph=ktwin_graph)
