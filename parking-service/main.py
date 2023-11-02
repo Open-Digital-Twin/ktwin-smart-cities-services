@@ -28,15 +28,19 @@ def home():
     app.logger.info(
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
-
-    kcommand.handle_command(request=request, twin_interface='ngsi-ld-city-offstreetparking', command='updateVehicleCount', twin_graph=ktwin_graph, callback=handle_update_vehicle_count_command)
+    
+    try:
+        kcommand.handle_command(request=request, twin_interface='ngsi-ld-city-offstreetparking', command='updateVehicleCount', twin_graph=ktwin_graph, callback=handle_update_vehicle_count_command)
+    except Exception as error:
+        app.logger.error(f"Error to handle command updateVehicleCount in TwinInstance {event.twin_instance}")
+        app.logger.error(error)
 
     # Return 204 - No-content
     return "", 204
 
 def handle_update_vehicle_count_command(command_event: kcommand.KTwinCommandEvent, target_twin_instance: ktwingraph.TwinInstanceReference):
     current_offstreetparking_data = command_event.cloud_event.data
-    latest_offstreetparking_event = keventstore.get_latest_twin_event(twin_interface=target_twin_instance.twin_interface, twin_instance=target_twin_instance.twin_instance)
+    latest_offstreetparking_event = keventstore.get_latest_twin_event(twin_interface=target_twin_instance.interface, twin_instance=target_twin_instance.instance)
     latest_offstreetparking_data = None
 
     if latest_offstreetparking_event is None:
