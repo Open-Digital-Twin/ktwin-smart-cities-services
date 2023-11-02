@@ -76,7 +76,11 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     else:
         payload["aqiLevel"] = AirQualityIndex.AQICategory.GOOD
 
-    kcommand.execute_command(command_payload=payload, command="updateairquality", relationship_name="neighborhood", twin_instance=event.cloud_event["source"], twin_graph=ktwin_graph)
+    try:
+        kcommand.execute_command(command_payload=payload, command="updateairqualityindex", relationship_name="neighborhood", twin_instance=event.cloud_event["source"], twin_graph=ktwin_graph)
+    except Exception as error:
+        app.logger.error(f"Error to execute command updateairqualityindex in relation neighborhood in TwinInstance {event.twin_instance}")
+        app.logger.error(error)
 
 def air_quality_level(density: float):
     if density is None or density < 0:
