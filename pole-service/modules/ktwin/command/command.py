@@ -1,7 +1,7 @@
 import os
 import requests
 from ..common import EVENT_TYPE_COMMAND_EXECUTED, build_cloud_event, get_broker_url, KTwinCommandEvent
-from ..twingraph import get_relationship_from_graph, get_twin_graph_by_relationship, TwinGraph
+from ..twingraph import get_relationship_from_graph, get_twin_graph_by_relation, TwinGraph
 from cloudevents.http import to_structured, from_http
 
 # command: the name of the command that will be invoked in the target interface.
@@ -25,12 +25,13 @@ def execute_command(command: str, command_payload: dict, relationship_name: str,
 
 def handle_command(request: requests.Request, twin_interface: str, command: str, twin_graph: TwinGraph, callback):
     ktwin_command_event = handle_request(request)
-    target_twin_instance = get_twin_graph_by_relationship(relationship_twin_instance=ktwin_command_event.twin_instance, relationship_twin_interface=ktwin_command_event.twin_interface, twin_graph=twin_graph)
+    target_twin_instance = get_twin_graph_by_relation(target_twin_interface=ktwin_command_event.twin_interface, source_twin_instance=ktwin_command_event.twin_instance_source, twin_graph=twin_graph)
 
     if target_twin_instance is None:
-        raise Exception("Target twin instance " + ktwin_command_event.twin_instance + " not exists for the following source instance: " + ktwin_command_event.cloud_event["source"])
+        # TODO: need to handle the scenario where a TwinInterface has multiple relations with the same TwinInterface
+        raise Exception("Source twin instance " + ktwin_command_event.twin_instance_source + " does not have a relation with the target interface: " + ktwin_command_event.twin_interface)
 
-    if ktwin_command_event.twin_interface == twin_interface and ktwin_command_event.command == command:
+    if ktwin_command_event.twin_interface == twin_interface and ktwin_command_event.command == command.lower():
         callback(ktwin_command_event, target_twin_instance)
 
 def handle_request(request) -> KTwinCommandEvent:

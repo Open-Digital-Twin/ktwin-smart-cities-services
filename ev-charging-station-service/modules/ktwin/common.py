@@ -40,7 +40,7 @@ class KTwinCommandEvent:
             self.twin_interface = ce_type_split[2]
         if len(ce_type_split) > 3:
             self.command = ce_type_split[3]
-        self.twin_instance = cloud_event["source"]
+        self.twin_instance_source = cloud_event["source"]
 
 # Twin Graph Components
 

@@ -48,11 +48,14 @@ def get_relationship_from_graph(twin_instance: str, relationship_name: str, twin
     return None
 
 # Get Twin Graph Node by twin instance and interface
-def get_twin_graph_by_relationship(relationship_twin_instance: str, relationship_twin_interface: str, twin_graph: TwinGraph) -> TwinInstanceReference:
-    for twin_instance in twin_graph.twin_instances_graph:
-        twin_instance_graph = twin_graph.twin_instances_graph[twin_instance]
-        for relationship in twin_instance_graph.relationships:
-            if relationship.instance == relationship_twin_instance and relationship.interface == relationship_twin_interface:
-                return relationship
+def get_twin_graph_by_relation(target_twin_interface: str, source_twin_instance: str, twin_graph: TwinGraph) -> TwinInstanceReference:
+    if source_twin_instance not in twin_graph.twin_instances_graph:
+        raise Exception("Twin Source not available in TwinGraph: " + source_twin_instance)
+
+    source_twin_graph = twin_graph.twin_instances_graph[source_twin_instance]
+
+    for relationship in source_twin_graph.relationships:
+        if relationship.interface == target_twin_interface:
+            return relationship
 
     return None
