@@ -12,7 +12,7 @@ def execute_command(command: str, command_payload: dict, relationship_name: str,
     relationship = get_relationship_from_graph(twin_instance=twin_instance_source, relationship_name=relationship_name, twin_graph=twin_graph)
     if relationship is None:
         raise ValueError("Relationship not exists")
-    ce_type = EVENT_TYPE_COMMAND_EXECUTED.format(relationship.twin_interface + "." + command)
+    ce_type = EVENT_TYPE_COMMAND_EXECUTED.format(relationship.instance + "." + command)
     ce_source = twin_instance_source
     cloud_event = build_cloud_event(ce_type=ce_type, ce_source=ce_source, data=command_payload)
     headers, body = to_structured(cloud_event)

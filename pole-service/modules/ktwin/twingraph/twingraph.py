@@ -26,7 +26,15 @@ def load_twin_graph() -> TwinGraph:
                 relationship_list.append(relationship)
         twin_instances_graph[twin_instance_graph["name"]] = TwinInstanceGraph(interface=twin_instance_graph["interface"], name=twin_instance_graph["name"], relationships=relationship_list)
 
-    return TwinGraph(twin_instances_graph=twin_instances_graph)
+    ktwin_graph = TwinGraph(twin_instances_graph=twin_instances_graph)
+    write_twin_graph(ktwin_graph=ktwin_graph)
+    return ktwin_graph
+
+def write_twin_graph(ktwin_graph: TwinGraph):
+    # Write Twin Graph in the local system
+    f = open("ktwin_graph.json", "w")
+    f.write(ktwin_graph.toJSON())
+    f.close()
 
 # Get the Graph relationship by name and instance
 def get_relationship_from_graph(twin_instance: str, relationship_name: str, twin_graph: TwinGraph) -> TwinInstanceReference:
