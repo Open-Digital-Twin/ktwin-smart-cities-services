@@ -21,7 +21,7 @@ app.logger.setLevel(logging.INFO)
 ktwin_graph = ktwingraph.load_twin_graph()
 
 print("ktwin_graph:")
-print(ktwin_graph.to_string())
+print(ktwin_graph.toJSON())
 
 @app.route("/", methods=["POST"])
 def home():
