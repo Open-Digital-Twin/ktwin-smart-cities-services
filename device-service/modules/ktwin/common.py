@@ -14,13 +14,18 @@ def get_broker_url():
 
 # KTWIN Events
 class KTwinEvent:
-    def __init__(self, cloud_event: CloudEvent):
-        self.cloud_event = cloud_event
-        self.twin_interface = None
-        ce_type_split = cloud_event["type"].split(".")
-        if len(ce_type_split) > 2:
-            self.twin_interface = ce_type_split[2]
-        self.twin_instance = cloud_event["source"]
+    def __init__(self, cloud_event: CloudEvent=None):
+        if cloud_event is None:
+            self.cloud_event = None
+            self.twin_interface = None
+            self.twin_instance = None
+        else:
+            self.cloud_event = cloud_event
+            self.twin_interface = None
+            ce_type_split = cloud_event["type"].split(".")
+            if len(ce_type_split) > 2:
+                self.twin_interface = ce_type_split[2]
+            self.twin_instance = cloud_event["source"]
 
     def set_event(self, twin_interface: str, twin_instance: str, data):
         self.twin_interface = twin_interface
