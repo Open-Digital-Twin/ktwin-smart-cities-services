@@ -1,7 +1,7 @@
 import os
 import requests
 from ..common import EVENT_TYPE_COMMAND_EXECUTED, build_cloud_event, get_broker_url, KTwinCommandEvent
-from ..twingraph import get_relationship_from_graph, load_twin_graph, get_twin_graph_by_relationship, TwinGraph
+from ..twingraph import get_relationship_from_graph, get_twin_graph_by_relationship, TwinGraph
 from cloudevents.http import to_structured, from_http
 
 # command: the name of the command that will be invoked in the target interface.

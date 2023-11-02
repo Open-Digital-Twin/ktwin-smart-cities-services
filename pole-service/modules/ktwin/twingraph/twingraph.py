@@ -52,7 +52,7 @@ def get_twin_graph_by_relationship(relationship_twin_instance: str, relationship
     for twin_instance in twin_graph.twin_instances_graph:
         twin_instance_graph = twin_graph.twin_instances_graph[twin_instance]
         for relationship in twin_instance_graph.relationships:
-            if relationship.twin_instance == relationship_twin_instance and relationship.twin_interface == relationship_twin_interface:
+            if relationship.instance == relationship_twin_instance and relationship.interface == relationship_twin_interface:
                 return relationship
-        
+
     return None
