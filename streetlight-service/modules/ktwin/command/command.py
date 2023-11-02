@@ -28,7 +28,7 @@ def handle_command(request: requests.Request, twin_interface: str, command: str,
     target_twin_instance = get_twin_graph_by_relationship(relationship_twin_instance=ktwin_command_event.twin_instance, relationship_twin_interface=ktwin_command_event.twin_interface, twin_graph=twin_graph)
 
     if target_twin_instance is None:
-        raise Exception("Target twin instance not exists for the following source instance: " + ktwin_command_event.twin_instance)
+        raise Exception("Target twin instance " + ktwin_command_event.twin_instance + " not exists for the following source instance: " + ktwin_command_event.cloud_event["source"])
 
     if ktwin_command_event.twin_interface == twin_interface and ktwin_command_event.command == command:
         callback(ktwin_command_event, target_twin_instance)
