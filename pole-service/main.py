@@ -38,18 +38,29 @@ def home():
 
 def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     air_quality_observed = event.cloud_event.data
-    air_quality_observed["CO2AqiLevel"] = air_quality_level(air_quality_observed["CO2Density"])
-    air_quality_observed["NOAqiLevel"] = air_quality_level(air_quality_observed["NODensity"])
-    air_quality_observed["C6H6AqiLevel"] = air_quality_level(air_quality_observed["C6H6Density"])
-    air_quality_observed["CDAqiLevel"] = air_quality_level(air_quality_observed["CDDensity"])
-    air_quality_observed["PBAqiLevel"] = air_quality_level(air_quality_observed["PBDensity"])
-    air_quality_observed["SH2AqiLevel"] = air_quality_level(air_quality_observed["SH2Density"])
+    # air_quality_observed["CO2AqiLevel"] = air_quality_level(air_quality_observed["CO2Density"])
+    # air_quality_observed["NOAqiLevel"] = air_quality_level(air_quality_observed["NODensity"])
+    # air_quality_observed["C6H6AqiLevel"] = air_quality_level(air_quality_observed["C6H6Density"])
+    # air_quality_observed["CDAqiLevel"] = air_quality_level(air_quality_observed["CDDensity"])
+    # air_quality_observed["PBAqiLevel"] = air_quality_level(air_quality_observed["PBDensity"])
+    # air_quality_observed["SH2AqiLevel"] = air_quality_level(air_quality_observed["SH2Density"])
 
     air_quality_observed["COAqiLevel"] = aqi.COAirQualityIndex(concentration=air_quality_observed["CODensity"]).get_air_quality_category()
     air_quality_observed["PM10AqiLevel"] = aqi.PM10AirQualityIndex(concentration=air_quality_observed["PM10Density"]).get_air_quality_category()
     air_quality_observed["PM25AqiLevel"] = aqi.PM25AirQualityIndex(concentration=air_quality_observed["PM25Density"]).get_air_quality_category()
     air_quality_observed["SO2AqiLevel"] = aqi.PM25AirQualityIndex(concentration=air_quality_observed["SO2Density"]).get_air_quality_category()
     air_quality_observed["O3AqiLevel"] = aqi.O3AirQualityIndex(concentration=air_quality_observed["O3Density"]).get_air_quality_category()
+
+    event.cloud_event.data = air_quality_observed
+
+    print("event")
+    print(event)
+
+    print("event.cloud_event")
+    print(event.cloud_event)
+
+    print("event.cloud_event.data")
+    print(event.cloud_event.data)
 
     keventstore.update_twin_event(event)
 
@@ -82,21 +93,6 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
         app.logger.error(f"Error to execute command updateairqualityindex in relation neighborhood in TwinInstance {event.twin_instance}")
         app.logger.error(error)
 
-def air_quality_level(density: float):
-    if density is None or density < 0:
-        return { "level": "unknown"}
-    elif density <= 50:
-        return { "level": "good" }
-    elif density <= 100:
-        return { "level": "moderate" }
-    elif density <= 150:
-        return { "level": "unhealthyForSensitiveGroups" }
-    elif density <= 200:
-        return { "level": "unhealthy" }
-    elif density <= 300:
-        return { "level": "veryUnhealthy" }
-    else:
-        return { "level": "hazardous" }
 
 def handle_weather_observed_event(event: kevent.KTwinEvent):
     app.logger.info(f"Processing {event.twin_instance} event")

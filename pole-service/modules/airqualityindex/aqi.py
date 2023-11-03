@@ -31,8 +31,6 @@ class PollutantAQIIndexes:
     very_hazardous_low: float
     very_hazardous_high: float
 
-
-
 # Default AQI Indexes
 AQI_GOOD_LOW = 0
 AQI_GOOD_HIGH = 50
@@ -127,32 +125,32 @@ class AirQualityIndex:
         air_quality_index = ((index_breakpoint_high-index_breakpoint_low)/(concentration_breakpoint_high-concentration_breakpoint_low))*(self.concentration-concentration_breakpoint_low) + index_breakpoint_low
         return air_quality_index
     
-    def get_air_quality_category(self) -> AQICategory:
+    def get_air_quality_category(self) -> str:
         air_index = self.calculate_air_quality_index()
 
         # Good Level
         if air_index >= AQI_GOOD_LOW and air_index < AQI_GOOD_HIGH + 1:
-            return AQICategory.GOOD
+            return AQICategory.GOOD.value
 
         # Moderate Level
         if air_index >= AQI_MODERATE_LOW and air_index < AQI_MODERATE_HIGH + 1:
-            return AQICategory.MODERATE
+            return AQICategory.MODERATE.value
 
         # Unhealthy for sensitive groups Level
         if air_index >= AQI_UNHEALTHY_FOR_SENSITIVE_GROUPS_LOW and air_index < AQI_UNHEALTHY_FOR_SENSITIVE_GROUPS_HIGH + 1:
-            return AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS
+            return AQICategory.UNHEALTHY_FOR_SENSITIVE_GROUPS.value
 
         # Unhealthy Level
         if air_index >= AQI_UNHEALTHY_LOW and air_index < AQI_UNHEALTHY_HIGH + 1:
-            return AQICategory.UNHEALTHY
+            return AQICategory.UNHEALTHY.value
         
         # Very Unhealthy Level
         if air_index >= AQI_VERY_UNHEALTHY_LOW and air_index < AQI_VERY_UNHEALTHY_HIGH + 1:
-            return AQICategory.VERY_UNHEALTHY
+            return AQICategory.VERY_UNHEALTHY.value
         
         # Very Unhealthy Level
         if air_index >= AQI_HAZARDOUS_LOW:
-            return AQICategory.HAZARDOUS
+            return AQICategory.HAZARDOUS.value
 
 # Level definitions: https://en.wikipedia.org/wiki/Air_quality_index
 
