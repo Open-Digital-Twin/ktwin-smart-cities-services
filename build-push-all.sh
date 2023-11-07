@@ -3,11 +3,6 @@ sh build-push.sh
 
 cd ..
 
-cd ev-charging-station-service
-sh build-push.sh
-
-cd ..
-
 cd neighborhood-service
 sh build-push.sh
 

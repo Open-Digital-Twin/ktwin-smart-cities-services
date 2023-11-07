@@ -1,8 +1,0 @@
-version: '3.5'
-
-services:
-  ev-charging-station-service:
-    image: dev.local/ev-charging-station-service:0.1
-    container_name: ev-charging-station-service
-    ports:
-      - 8080:8080
