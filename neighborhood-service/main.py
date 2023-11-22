@@ -53,7 +53,7 @@ def home():
     )
 
     try:
-        kcommand.handle_command(request=request, twin_interface='s4city-city-neighbourhood', command='updateairqualityindex', twin_graph=ktwin_graph, callback=handle_update_air_quality_index)
+        kcommand.handle_command(request=request, twin_interface='s4city-city-neighborhood', command='updateairqualityindex', twin_graph=ktwin_graph, callback=handle_update_air_quality_index)
     except Exception as error:
         app.logger.error(f"Error to handle command updateairqualityindex in TwinInstance {event.twin_instance}")
         app.logger.error(error)

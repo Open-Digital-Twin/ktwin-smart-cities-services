@@ -99,7 +99,7 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
     print(city_pole_relation.name)
 
     try:
-        kcommand.execute_command(command_payload=payload, command="updateairqualityindex", relationship_name="refNeighbourhood", twin_instance_source=city_pole_relation.instance, twin_graph=ktwin_graph)
+        kcommand.execute_command(command_payload=payload, command="updateairqualityindex", relationship_name="refNeighborhood", twin_instance_source=city_pole_relation.instance, twin_graph=ktwin_graph)
     except Exception as error:
         app.logger.error(f"Error to execute command updateairqualityindex in relation neighborhood in TwinInstance {event.twin_instance}")
         app.logger.error(error)
