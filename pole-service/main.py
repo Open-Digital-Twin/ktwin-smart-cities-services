@@ -54,15 +54,6 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
 
     event.cloud_event.data = air_quality_observed
 
-    print("event")
-    print(event)
-
-    print("event.cloud_event")
-    print(event.cloud_event)
-
-    print("event.cloud_event.data")
-    print(event.cloud_event.data)
-
     keventstore.update_twin_event(event)
 
     all_levels = list()
@@ -93,10 +84,6 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
 
     if city_pole_relation == None:
         raise Exception("City pole relation not found for Twin Instance: " + event.cloud_event["source"])
-    
-    print(city_pole_relation.instance)
-    print(city_pole_relation.interface)
-    print(city_pole_relation.name)
 
     try:
         kcommand.execute_command(command_payload=payload, command="updateairqualityindex", relationship_name="refNeighborhood", twin_instance_source=city_pole_relation.instance, twin_graph=ktwin_graph)
