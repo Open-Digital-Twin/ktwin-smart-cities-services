@@ -32,6 +32,7 @@ def home():
 
     kevent.handle_event(request, 'ngsi-ld-city-airqualityobserved', handle_air_quality_observed_event)
     kevent.handle_event(request, 'ngsi-ld-city-weatherobserved', handle_weather_observed_event)
+    kevent.handle_event(request, 'ngsi-ld-city-crowdflowobserved', handle_crowd_flow_observed_event)
     
     # Return 204 - No-content
     return "", 204
@@ -91,6 +92,24 @@ def handle_air_quality_observed_event(event: kevent.KTwinEvent):
         app.logger.error(f"Error to execute command updateairqualityindex in relation neighborhood in TwinInstance {event.twin_instance}")
         app.logger.error(error)
 
+CROWD_FLOW_AVERAGE_CROWD_SPEED_THRESHOLD = 4
+CROWD_FLOW_HEADWAY_TIME_THRESHOLD = 2
+
+def handle_crowd_flow_observed_event(event: kevent.KTwinEvent):
+    app.logger.info(f"Processing {event.twin_instance} event")
+
+    crowd_flow_observed = event.cloud_event.data
+
+    if "averageCrowdSpeed" in crowd_flow_observed and crowd_flow_observed["averageCrowdSpeed"] < CROWD_FLOW_AVERAGE_CROWD_SPEED_THRESHOLD:
+        crowd_flow_observed["congested"] = True
+    elif "averageHeadwayTime" in crowd_flow_observed and crowd_flow_observed["averageHeadwayTime"] < CROWD_FLOW_HEADWAY_TIME_THRESHOLD:
+        crowd_flow_observed["congested"] = True
+    else:
+        crowd_flow_observed["congested"] = False
+
+    event.cloud_event.data = crowd_flow_observed
+
+    keventstore.update_twin_event(event)
 
 def handle_weather_observed_event(event: kevent.KTwinEvent):
     app.logger.info(f"Processing {event.twin_instance} event")
