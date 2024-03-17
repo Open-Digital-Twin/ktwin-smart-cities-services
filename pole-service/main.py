@@ -33,7 +33,8 @@ def home():
     kevent.handle_event(request, 'ngsi-ld-city-airqualityobserved', handle_air_quality_observed_event)
     kevent.handle_event(request, 'ngsi-ld-city-weatherobserved', handle_weather_observed_event)
     kevent.handle_event(request, 'ngsi-ld-city-crowdflowobserved', handle_crowd_flow_observed_event)
-    
+    kevent.handle_event(request, 'ngsi-ld-city-trafficflowobserved', handle_traffic_flow_observed_event)
+
     # Return 204 - No-content
     return "", 204
 
@@ -108,6 +109,25 @@ def handle_crowd_flow_observed_event(event: kevent.KTwinEvent):
         crowd_flow_observed["congested"] = False
 
     event.cloud_event.data = crowd_flow_observed
+
+    keventstore.update_twin_event(event)
+
+TRAFFIC_FLOW_AVERAGE_TRAFFIC_SPEED_THRESHOLD = 12
+TRAFFIC_FLOW_HEADWAY_TIME_THRESHOLD = 2
+
+def handle_traffic_flow_observed_event(event: kevent.KTwinEvent):
+    app.logger.info(f"Processing {event.twin_instance} event")
+
+    traffic_flow_observed = event.cloud_event.data
+
+    if "averageVehicleSpeed" in traffic_flow_observed and traffic_flow_observed["averageVehicleSpeed"] < TRAFFIC_FLOW_AVERAGE_TRAFFIC_SPEED_THRESHOLD:
+        traffic_flow_observed["congested"] = True
+    elif "averageHeadwayTime" in traffic_flow_observed and traffic_flow_observed["averageHeadwayTime"] < TRAFFIC_FLOW_HEADWAY_TIME_THRESHOLD:
+        traffic_flow_observed["congested"] = True
+    else:
+        traffic_flow_observed["congested"] = False
+
+    event.cloud_event.data = traffic_flow_observed
 
     keventstore.update_twin_event(event)
 
