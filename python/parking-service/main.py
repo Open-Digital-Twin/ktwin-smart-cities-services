@@ -19,7 +19,10 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
-ktwin_graph = ktwingraph.load_twin_graph()
+TWIN_INTERFACE_PARKING = 'ngsi-ld-city-offstreetparking'
+TWIN_INTERFACE_PARKING_SPOT = 'ngsi-ld-city-offstreetparkingspot'
+app.logger.info('Loading Twin Interface {0}, {1}'.format(TWIN_INTERFACE_PARKING, TWIN_INTERFACE_PARKING_SPOT))
+ktwin_graph = ktwingraph.load_twin_graph_by_instance(twin_instances=[TWIN_INTERFACE_PARKING, TWIN_INTERFACE_PARKING_SPOT])
 
 @app.route("/", methods=["POST"])
 def home():
@@ -30,7 +33,7 @@ def home():
     )
     
     try:
-        kcommand.handle_command(request=request, twin_interface='ngsi-ld-city-offstreetparking', command='updateVehicleCount', twin_graph=ktwin_graph, callback=handle_update_vehicle_count_command)
+        kcommand.handle_command(request=request, twin_interface=TWIN_INTERFACE_PARKING, command='updateVehicleCount', twin_graph=ktwin_graph, callback=handle_update_vehicle_count_command)
     except Exception as error:
         app.logger.error(f"Error to handle command updateVehicleCount in TwinInstance {event.twin_instance}")
         app.logger.error(error)

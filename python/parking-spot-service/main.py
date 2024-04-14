@@ -18,7 +18,9 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
-ktwin_graph = ktwingraph.load_twin_graph()
+TWIN_INTERFACE = 'ngsi-ld-city-parkingspot'
+app.logger.info('Loading Twin Interface {0}'.format(TWIN_INTERFACE))
+ktwin_graph = ktwingraph.load_twin_graph_by_instance(twin_instances=[TWIN_INTERFACE])
 
 @app.route("/", methods=["POST"])
 def home():
@@ -28,7 +30,7 @@ def home():
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    kevent.handle_event(request, 'ngsi-ld-city-parkingspot', handle_parkingspot_event)
+    kevent.handle_event(request, TWIN_INTERFACE, handle_parkingspot_event)
 
     # Return 204 - No-content
     return "", 204

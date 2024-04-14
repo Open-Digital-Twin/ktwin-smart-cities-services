@@ -20,7 +20,10 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
-ktwin_graph = ktwingraph.load_twin_graph()
+TWIN_INTERFACE_NEIGHBORHOOD = 's4city-city-neighborhood'
+TWIN_INTERFACE_CITY_POLE = 'city-pole'
+app.logger.info('Loading Twin Interface {0}, {1}'.format(TWIN_INTERFACE_NEIGHBORHOOD, TWIN_INTERFACE_CITY_POLE))
+ktwin_graph = ktwingraph.load_twin_graph_by_instance(twin_instances=[TWIN_INTERFACE_NEIGHBORHOOD, TWIN_INTERFACE_CITY_POLE])
 
 class AQICategory(Enum):
     GOOD="GOOD"
@@ -53,7 +56,7 @@ def home():
     )
 
     try:
-        kcommand.handle_command(request=request, twin_interface='s4city-city-neighborhood', command='updateairqualityindex', twin_graph=ktwin_graph, callback=handle_update_air_quality_index)
+        kcommand.handle_command(request=request, twin_interface=TWIN_INTERFACE_NEIGHBORHOOD, command='updateairqualityindex', twin_graph=ktwin_graph, callback=handle_update_air_quality_index)
     except Exception as error:
         app.logger.error(f"Error to handle command updateairqualityindex in TwinInstance {event.twin_instance}")
         app.logger.error(error)

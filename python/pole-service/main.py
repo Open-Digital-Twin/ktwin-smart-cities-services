@@ -20,7 +20,14 @@ handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
-ktwin_graph = ktwingraph.load_twin_graph()
+TWIN_INTERFACE_CITY_POLE = 'city-pole'
+TWIN_INTERFACE_AIR_QUALITY_OBSERVED = 'ngsi-ld-city-airqualityobserved'
+TWIN_INTERFACE_WEATHER_OBSERVED = 'ngsi-ld-city-weatherobserved'
+TWIN_INTERFACE_CROWD_FLOW_OBSERVED = 'ngsi-ld-city-crowdflowobserved'
+TWIN_INTERFACE_TRAFFIC_FLOW_OBSERVED = 'ngsi-ld-city-trafficflowobserved'
+
+app.logger.info('Loading Twin Interface {0}, {1}'.format(TWIN_INTERFACE_CITY_POLE, TWIN_INTERFACE_AIR_QUALITY_OBSERVED))
+ktwin_graph = ktwingraph.load_twin_graph_by_instance(twin_instances=[TWIN_INTERFACE_CITY_POLE, TWIN_INTERFACE_AIR_QUALITY_OBSERVED])
 
 @app.route("/", methods=["POST"])
 def home():
@@ -30,10 +37,10 @@ def home():
         f"Event TwinInstance: {event.twin_instance} - Event TwinInterface: {event.twin_interface}"
     )
 
-    kevent.handle_event(request, 'ngsi-ld-city-airqualityobserved', handle_air_quality_observed_event)
-    kevent.handle_event(request, 'ngsi-ld-city-weatherobserved', handle_weather_observed_event)
-    kevent.handle_event(request, 'ngsi-ld-city-crowdflowobserved', handle_crowd_flow_observed_event)
-    kevent.handle_event(request, 'ngsi-ld-city-trafficflowobserved', handle_traffic_flow_observed_event)
+    kevent.handle_event(request, TWIN_INTERFACE_AIR_QUALITY_OBSERVED, handle_air_quality_observed_event)
+    kevent.handle_event(request, TWIN_INTERFACE_WEATHER_OBSERVED, handle_weather_observed_event)
+    kevent.handle_event(request, TWIN_INTERFACE_CROWD_FLOW_OBSERVED, handle_crowd_flow_observed_event)
+    kevent.handle_event(request, TWIN_INTERFACE_TRAFFIC_FLOW_OBSERVED, handle_traffic_flow_observed_event)
 
     # Return 204 - No-content
     return "", 204
