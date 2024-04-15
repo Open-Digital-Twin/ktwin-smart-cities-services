@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Device Service",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "env": {
+                "ENV": "local"
+            },
+            "program": "${workspaceRoot}/golang/cmd/device-service",
+        },
+        {
+            "name": "Launch Pole Service",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "env": {
+                "ENV": "local"
+            },
+            "program": "${workspaceRoot}/golang/cmd/pole-service",
+        }
+    ]
+}
