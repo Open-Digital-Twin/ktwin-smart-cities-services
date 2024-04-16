@@ -30,6 +30,10 @@ func GetBrokerURL() string {
 }
 
 func PostCloudEvent(cloudEvent *cloudevents.Event, url string) error {
+	if os.Getenv("ENV") == "local" {
+		return nil
+	}
+
 	ctx := cloudevents.ContextWithTarget(context.Background(), GetBrokerURL())
 
 	c, err := cloudevents.NewClientHTTP()
@@ -46,6 +50,10 @@ func PostCloudEvent(cloudEvent *cloudevents.Event, url string) error {
 }
 
 func GetCloudEvent(cloudEvent *cloudevents.Event, url string) (*cloudevents.Event, error) {
+	if os.Getenv("ENV") == "local" {
+		return cloudEvent, nil
+	}
+
 	ctx := cloudevents.ContextWithTarget(context.Background(), GetBrokerURL())
 
 	c, err := cloudevents.NewClientHTTP()
