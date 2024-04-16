@@ -34,7 +34,11 @@ func StartServer(handleFuncTwin HandlerEventFunc) {
 			return
 		}
 
-		logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
+		if twinEvent.EventType == ktwin.CommandEvent {
+			logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s - Event CommandName: %s", twinEvent.TwinInstance, twinEvent.TwinInterface, twinEvent.CommandName))
+		} else {
+			logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
+		}
 
 		if err := handleFuncTwin(twinEvent); err != nil {
 			logger.Error("Error processing cloud event request", err)
