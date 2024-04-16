@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	parkingModel "github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/parking-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/parking-spot-service/model"
@@ -16,28 +15,6 @@ import (
 
 var logger = log.NewLogger()
 var twinGraph ktwin.TwinGraph
-
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	twinEvent := ktwin.HandleRequest(r)
-
-	if twinEvent == nil {
-		logger.Error("Error handling cloud event request", nil)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error handling cloud event request"))
-		return
-	}
-
-	logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
-
-	err := ktwin.HandleEvent(twinEvent, model.TWIN_INTERFACE_PARKING_SPOT, handleParkingSpotEvent)
-
-	if err != nil {
-		logger.Error("Error processing cloud event request", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing cloud event request"))
-		return
-	}
-}
 
 func handleParkingSpotEvent(event *ktwin.TwinEvent) error {
 	var parkingSpot model.ParkingSpot
@@ -93,5 +70,5 @@ func main() {
 		logger.Error("Error loading twin graph", err)
 		return
 	}
-	server.StartServer(requestHandler)
+	server.StartServer(handleParkingSpotEvent)
 }

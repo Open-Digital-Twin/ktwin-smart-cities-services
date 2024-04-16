@@ -3,7 +3,7 @@ package model
 import "time"
 
 const (
-	DEVICE_INTERFACE_ID = "ngsi-ld-city-device"
+	TWIN_INTERFACE_DEVICE = "ngsi-ld-city-device"
 )
 
 type Device struct {

@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -16,7 +17,7 @@ import (
 const (
 	EventRealGenerated    = "ktwin.real.%s"
 	EventVirtualGenerated = "ktwin.virtual.%s"
-	EventCommandExecuted  = "ktwin.command.%s"
+	EventCommandExecuted  = "ktwin.command.%s.%s"
 )
 
 func GetEventStoreURL() string {
@@ -63,25 +64,58 @@ func GetCloudEvent(cloudEvent *cloudevents.Event, url string) (*cloudevents.Even
 
 // TwinEvent
 
+type EventType string
+
+const (
+	RealEvent    EventType = "real"
+	VirtualEvent EventType = "virtual"
+	CommandEvent EventType = "command"
+)
+
 type TwinEvent struct {
-	CloudEvent    *cloudevents.Event
+	CloudEvent *cloudevents.Event
+
+	// It is part of CloudEvent type
+	EventType     EventType
 	TwinInterface string
-	TwinInstance  string
+	CommandName   string
+
+	// The Source of the CloudEvent
+	TwinInstance string
 }
 
 func NewTwinEvent() *TwinEvent {
 	return &TwinEvent{}
 }
 
-func (k *TwinEvent) HandleRequest(r *http.Request) error {
+// Real Event Type: ktwin.real.<twin-interface>
+// Virtual Event Type: ktwin.virtual.<twin-interface>
+// Command Event Type: ktwin.command.<twin-interface>.<command-name>
+func (e *TwinEvent) HandleRequest(r *http.Request) error {
 	cloudEvent, err := cloudevents.NewEventFromHTTPRequest(r)
 	if err != nil {
 		log.Printf("failed to parse CloudEvent from request: %v", err)
 		return err
 	}
-	k.TwinInstance = cloudEvent.Source()
-	k.TwinInterface = cloudEvent.Type()
-	k.CloudEvent = cloudEvent
+
+	ceType := strings.Split(cloudEvent.Type(), ".")
+	e.EventType = EventType(ceType[1])
+	e.TwinInterface = ceType[2]
+	e.TwinInstance = cloudEvent.Source()
+	e.CloudEvent = cloudEvent
+
+	if len(ceType) > 3 {
+		e.CommandName = ceType[3]
+	}
+
+	if e.EventType == "" {
+		return errors.New("event type not found")
+	}
+
+	if e.EventType == CommandEvent && e.CommandName == "" {
+		return errors.New("command name not found")
+	}
+
 	return nil
 }
 

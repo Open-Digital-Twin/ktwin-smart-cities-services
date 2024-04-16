@@ -2,40 +2,17 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/device-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kevent"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
 	log "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/server"
 )
 
 var logger = log.NewLogger()
-
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	twinEvent := ktwin.HandleRequest(r)
-
-	if twinEvent == nil {
-		logger.Error("Error handling cloud event request", nil)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error handling cloud event request"))
-		return
-	}
-
-	// Log event details
-	logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
-
-	err := ktwin.HandleEvent(twinEvent, model.DEVICE_INTERFACE_ID, handleDeviceEvent)
-
-	if err != nil {
-		logger.Error("Error processing cloud event request", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing cloud event request"))
-		return
-	}
-}
 
 func handleDeviceEvent(event *ktwin.TwinEvent) error {
 	const (
@@ -60,7 +37,7 @@ func handleDeviceEvent(event *ktwin.TwinEvent) error {
 			// Propagate event to real device to measure in low frequency
 			device.MeasurementFrequency = LowFrequency
 			logger.Info(fmt.Sprintf("Battery Level below threshold. Sending event to real instance: %s", event.TwinInstance))
-			err := ktwin.PublishToRealTwin(event.TwinInterface, event.TwinInstance, device)
+			err := kevent.PublishToRealTwin(event.TwinInterface, event.TwinInstance, device)
 			if err != nil {
 				return err
 			}
@@ -68,7 +45,7 @@ func handleDeviceEvent(event *ktwin.TwinEvent) error {
 			// Propagate event to real device to measure in high frequency
 			device.MeasurementFrequency = HighFrequency
 			logger.Info(fmt.Sprintf("Battery Level above threshold. Sending event to real instance: %s", event.TwinInstance))
-			err := ktwin.PublishToRealTwin(event.TwinInterface, event.TwinInstance, device)
+			err := kevent.PublishToRealTwin(event.TwinInterface, event.TwinInstance, device)
 			if err != nil {
 				return err
 			}
@@ -84,5 +61,5 @@ func handleDeviceEvent(event *ktwin.TwinEvent) error {
 
 func main() {
 	server.LoadEnv()
-	server.StartServer(requestHandler)
+	server.StartServer(handleDeviceEvent)
 }

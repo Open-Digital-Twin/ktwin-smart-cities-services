@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/streetlight-service/model"
@@ -13,28 +11,6 @@ import (
 )
 
 var logger = log.NewLogger()
-
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	twinEvent := ktwin.HandleRequest(r)
-
-	if twinEvent == nil {
-		logger.Error("Error handling cloud event request", nil)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error handling cloud event request"))
-		return
-	}
-
-	logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
-
-	err := ktwin.HandleEvent(twinEvent, model.STREETLIGHT_INTERFACE_ID, handleStreetLightEvent)
-
-	if err != nil {
-		logger.Error("Error processing cloud event request", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing cloud event request"))
-		return
-	}
-}
 
 func handleStreetLightEvent(event *ktwin.TwinEvent) error {
 	timeNow := time.Now()
@@ -101,5 +77,5 @@ func isWithDefect(datetimeNow time.Time, dateLastSwitching time.Time) bool {
 
 func main() {
 	server.LoadEnv()
-	server.StartServer(requestHandler)
+	server.StartServer(handleStreetLightEvent)
 }

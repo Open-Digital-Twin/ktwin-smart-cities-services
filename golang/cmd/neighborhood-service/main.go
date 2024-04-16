@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/parking-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
@@ -21,29 +20,12 @@ var (
 var logger = log.NewLogger()
 var twinGraph ktwin.TwinGraph
 
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	command := kcommand.HandleCommandRequest(r)
-
-	if command == nil {
-		logger.Error("Error handling cloud event request", nil)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error handling cloud event request"))
-		return
-	}
-
-	logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", command.TwinInstanceSource, command.TwinInterface))
-
-	err := kcommand.HandleCommand(command, TWIN_COMMAND_UPDATE_VEHICLE_COUNT, twinGraph, handleUpdateVehicleCountCommand)
-
-	if err != nil {
-		logger.Error("Error processing cloud event request", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing cloud event request"))
-		return
-	}
+func handleEvent(event *ktwin.TwinEvent) error {
+	logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", event.TwinInstance, event.TwinInterface))
+	return kcommand.HandleCommand(event, TWIN_COMMAND_UPDATE_VEHICLE_COUNT, twinGraph, handleUpdateVehicleCountCommand)
 }
 
-func handleUpdateVehicleCountCommand(command *kcommand.TwinCommand, targetTwinInstance ktwin.TwinInstanceReference) error {
+func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {
 	latestEvent, err := keventstore.GetLatestTwinEvent(targetTwinInstance.Instance, targetTwinInstance.Instance)
 
 	if err != nil {
@@ -93,5 +75,5 @@ func main() {
 		logger.Error("Error loading twin graph", err)
 		return
 	}
-	server.StartServer(requestHandler)
+	server.StartServer(handleEvent)
 }

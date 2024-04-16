@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"net/http"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/pole-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
@@ -30,27 +29,6 @@ var (
 
 var logger = log.NewLogger()
 var twinGraph ktwin.TwinGraph
-
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	twinEvent := ktwin.HandleRequest(r)
-
-	if twinEvent == nil {
-		logger.Error("Error handling cloud event request", nil)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error handling cloud event request"))
-		return
-	}
-
-	logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
-
-	err := handleEvent(twinEvent)
-	if err != nil {
-		logger.Error("Error processing cloud event request", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Error processing cloud event request"))
-		return
-	}
-}
 
 func handleEvent(event *ktwin.TwinEvent) error {
 	switch event.TwinInterface {
@@ -246,5 +224,5 @@ func main() {
 		return
 	}
 
-	server.StartServer(requestHandler)
+	server.StartServer(handleEvent)
 }
