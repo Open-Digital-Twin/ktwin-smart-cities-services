@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -61,6 +60,8 @@ func GetCloudEvent(cloudEvent *cloudevents.Event, url string) (*cloudevents.Even
 	return event, nil
 
 }
+
+// TwinEvent
 
 type TwinEvent struct {
 	CloudEvent    *cloudevents.Event
@@ -121,31 +122,6 @@ func BuildCloudEvent(ceType, ceSource string, data interface{}) *cloudevents.Eve
 	event.SetSource(ceSource)
 	event.SetData(cloudevents.ApplicationJSON, data)
 	return &event
-}
-
-type KTwinCommandEvent struct {
-	CloudEvent         *cloudevents.Event
-	TwinInterface      string
-	Command            string
-	TwinInstanceSource string
-}
-
-func NewKTwinCommandEvent(cloudEvent *cloudevents.Event) *KTwinCommandEvent {
-	ktwinCommandEvent := &KTwinCommandEvent{}
-	if cloudEvent != nil {
-		ktwinCommandEvent.CloudEvent = cloudEvent
-		ktwinCommandEvent.TwinInterface = ""
-		ktwinCommandEvent.Command = ""
-		parts := strings.Split(cloudEvent.Type(), ".")
-		if len(parts) > 2 {
-			ktwinCommandEvent.TwinInterface = parts[2]
-		}
-		if len(parts) > 3 {
-			ktwinCommandEvent.Command = parts[3]
-		}
-		ktwinCommandEvent.TwinInstanceSource = cloudEvent.Source()
-	}
-	return ktwinCommandEvent
 }
 
 type TwinInstanceReference struct {

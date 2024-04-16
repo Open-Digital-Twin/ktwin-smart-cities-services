@@ -7,8 +7,8 @@ import (
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/pole-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kcommand"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
-	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwincommand"
 	ktwingraph "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwingraph"
 
 	log "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
@@ -123,7 +123,7 @@ func handleAirQualityObservedEvent(event *ktwin.TwinEvent) error {
 		logger.Error(fmt.Sprintf("City pole relation not found for Twin Instance: %s\n", event.TwinInstance), nil)
 	}
 
-	err = ktwincommand.PublishCommand("updateairqualityindex", updateAirQualityIndexCommand, "refNeighborhood", cityPoleRelation.Instance, twinGraph)
+	err = kcommand.PublishCommand("updateairqualityindex", updateAirQualityIndexCommand, "refNeighborhood", cityPoleRelation.Instance, twinGraph)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error executing command %s in relation %s in TwinInstance %s\n", "updateairqualityindex", "refNeighborhood", cityPoleRelation.Instance), err)
