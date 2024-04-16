@@ -30,7 +30,7 @@ func handleDeviceEvent(event *ktwin.TwinEvent) error {
 	}
 
 	device.DateObserved = time.Now()
-	logger.Info(fmt.Sprintf("Twin Instance: %s | Twin Interface: %s | %#v", event.TwinInstance, event.TwinInterface, device))
+	logger.Info(fmt.Sprintf("CloudEvent: %v", string(event.CloudEvent.DataEncoded)))
 
 	if device.BatteryLevel != 0 {
 		if device.BatteryLevel < BatteryThreshold {
