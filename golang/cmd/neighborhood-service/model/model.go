@@ -1,11 +1,8 @@
 package model
 
 const (
-	TWIN_INTERFACE_ON_STREET_PARKING       = "ngsi-ld-city-onstreetparking"
-	TWIN_INTERFACE_OFF_STREET_PARKING      = "ngsi-ld-city-offstreetparking"
-	TWIN_INTERFACE_ON_STREET_PARKING_SPOT  = "ngsi-ld-city-onstreetparkingspot"
-	TWIN_INTERFACE_OFF_STREET_PARKING_SPOT = "ngsi-ld-city-offstreetparkingspot"
-	TWIN_COMMAND_UPDATE_VEHICLE_COUNT      = "updateVehicleCount"
+	PARKING_TWIN_INTERFACE      = "ngsi-ld-city-offstreetparking"
+	PARKING_SPOT_TWIN_INTERFACE = "ngsi-ld-city-offstreetparkingspot"
 )
 
 type Facility string

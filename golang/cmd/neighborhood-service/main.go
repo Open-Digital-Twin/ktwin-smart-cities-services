@@ -13,6 +13,11 @@ import (
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/server"
 )
 
+var (
+	TWIN_INTERFACE_OFF_STREET_PARKING = "ngsi-ld-city-offstreetparking"
+	TWIN_COMMAND_UPDATE_VEHICLE_COUNT = "updateVehicleCount"
+)
+
 var logger = log.NewLogger()
 var twinGraph ktwin.TwinGraph
 
@@ -28,7 +33,7 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 
 	logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", command.TwinInstanceSource, command.TwinInterface))
 
-	err := kcommand.HandleCommand(command, model.TWIN_COMMAND_UPDATE_VEHICLE_COUNT, twinGraph, handleUpdateVehicleCountCommand)
+	err := kcommand.HandleCommand(command, TWIN_COMMAND_UPDATE_VEHICLE_COUNT, twinGraph, handleUpdateVehicleCountCommand)
 
 	if err != nil {
 		logger.Error("Error processing cloud event request", err)
@@ -82,7 +87,7 @@ func main() {
 	server.LoadEnv()
 
 	var err error
-	twinGraph, err = ktwingraph.LoadTwinGraphByInstances([]string{model.TWIN_INTERFACE_OFF_STREET_PARKING})
+	twinGraph, err = ktwingraph.LoadTwinGraphByInstances([]string{TWIN_COMMAND_UPDATE_VEHICLE_COUNT})
 
 	if err != nil {
 		logger.Error("Error loading twin graph", err)
