@@ -8,6 +8,5 @@ import (
 
 func main() {
 	config.LoadEnv()
-
 	server.StartServer(service.HandleEvent)
 }

@@ -1,17 +1,14 @@
 package service
 
 import (
-	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/parking-service/model"
+	"time"
+
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/neighborhood-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kcommand"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwingraph"
 	log "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
-)
-
-var (
-	TWIN_INTERFACE_OFF_STREET_PARKING = "ngsi-ld-city-offstreetparking"
-	TWIN_COMMAND_UPDATE_VEHICLE_COUNT = "updateVehicleCount"
 )
 
 var logger = log.NewLogger()
@@ -20,7 +17,7 @@ var twinGraph *ktwin.TwinGraph
 func loadTwinGraph() error {
 	if twinGraph != nil {
 		var err error
-		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{model.TWIN_COMMAND_UPDATE_VEHICLE_COUNT})
+		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{model.TWIN_INTERFACE_NEIGHBORHOOD, model.TWIN_INTERFACE_CITY_POLE})
 		if err != nil {
 			logger.Error("Error loading twin graph", err)
 			return err
@@ -35,45 +32,56 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 	if err != nil {
 		return err
 	}
-	return kcommand.HandleCommand(event, TWIN_COMMAND_UPDATE_VEHICLE_COUNT, *twinGraph, handleUpdateVehicleCountCommand)
+	return kcommand.HandleCommand(event, model.TWIN_COMMAND_UPDATE_AIR_QUALITY_INDEX, *twinGraph, handleUpdateAirQualityIndex)
 }
 
-func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {
+func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {
 	latestEvent, err := keventstore.GetLatestTwinEvent(targetTwinInstance.Instance, targetTwinInstance.Instance)
 
 	if err != nil {
 		return err
 	}
 
-	var parking model.OffStreetParking
+	var neighborhood model.Neighborhood
 
 	if latestEvent == nil {
-		parking.OccupiedSpotNumber = 0
-		// ktwin.NewTwinEvent().SetEvent(command.TwinInterface, command.TwinInstanceSource, command.TwinInstanceSource, parking)
+		now := time.Now()
+		neighborhood = model.Neighborhood{
+			AqiLevel:     model.GOOD,
+			DateObserved: now,
+			DateModified: now,
+		}
+	} else {
+		err := latestEvent.ToModel(&neighborhood)
+		if err != nil {
+			return err
+		}
 	}
 
-	var commandPayload model.UpdateVehicleCountCommand
-	err = command.ToModel(&commandPayload)
+	var updateAirQualityIndexCommand model.UpdateAirQualityIndexCommand
+	err = command.ToModel(&updateAirQualityIndexCommand)
 	if err != nil {
 		return err
 	}
 
-	if commandPayload.VehicleEntranceCount == 0 {
-		logger.Info("Vehicle entrance count is 0, no need to update the twin")
-	} else {
-		parking.OccupiedSpotNumber = parking.OccupiedSpotNumber + commandPayload.VehicleEntranceCount
+	if updateAirQualityIndexCommand.AqiLevel == "" {
+		logger.Info("AqiLevel not provided")
+		return nil
 	}
 
-	if commandPayload.VehicleExitCount == 0 {
-		logger.Info("Vehicle exit count is 0, no need to update the twin")
-	} else {
-		if parking.OccupiedSpotNumber <= 0 {
-			logger.Info("Vehicle exit count is greater than occupied spot number, no need to update the twin")
-			return nil
-		}
-		parking.OccupiedSpotNumber = parking.OccupiedSpotNumber - commandPayload.VehicleExitCount
+	newQualityIndexInt := model.GetQualityLevelInteger(updateAirQualityIndexCommand.AqiLevel)
+	latestQualityIndexInt := model.GetQualityLevelInteger(neighborhood.AqiLevel)
+
+	if newQualityIndexInt > latestQualityIndexInt || hasTimeExpired(time.Now(), neighborhood.DateObserved, 60) {
+		neighborhood.AqiLevel = updateAirQualityIndexCommand.AqiLevel
+		neighborhood.DateModified = time.Now()
 	}
 
-	latestEvent.SetData(parking)
+	latestEvent.SetData(neighborhood)
+
 	return keventstore.UpdateTwinEvent(latestEvent)
+}
+
+func hasTimeExpired(datetimeNow time.Time, datetimeObserved time.Time, minutes int) bool {
+	return datetimeNow.Sub(datetimeObserved).Minutes() > float64(minutes)
 }
