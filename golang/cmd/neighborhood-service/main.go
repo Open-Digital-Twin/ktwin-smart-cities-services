@@ -5,6 +5,7 @@ import (
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/parking-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/config"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kcommand"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwingraph"
@@ -66,7 +67,7 @@ func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent, targetTwinInstanc
 }
 
 func main() {
-	server.LoadEnv()
+	config.LoadEnv()
 
 	var err error
 	twinGraph, err = ktwingraph.LoadTwinGraphByInstances([]string{TWIN_COMMAND_UPDATE_VEHICLE_COUNT})

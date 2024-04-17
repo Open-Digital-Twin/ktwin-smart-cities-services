@@ -2,26 +2,14 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kevent"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
-	"github.com/joho/godotenv"
 )
 
 type HandlerEventFunc func(*ktwin.TwinEvent) error
-
-func LoadEnv() {
-	if os.Getenv("ENV") == "local" {
-		err := godotenv.Load("local.env")
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
-	}
-}
 
 func StartServer(handleFuncTwin HandlerEventFunc) {
 	handleFunc := func(w http.ResponseWriter, r *http.Request) {

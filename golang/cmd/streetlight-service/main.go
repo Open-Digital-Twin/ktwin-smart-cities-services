@@ -5,6 +5,7 @@ import (
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/streetlight-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/config"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
 	log "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/server"
@@ -76,6 +77,6 @@ func isWithDefect(datetimeNow time.Time, dateLastSwitching time.Time) bool {
 }
 
 func main() {
-	server.LoadEnv()
+	config.LoadEnv()
 	server.StartServer(handleStreetLightEvent)
 }

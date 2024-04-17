@@ -6,6 +6,7 @@ import (
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/pole-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/config"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kcommand"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
 	ktwingraph "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwingraph"
@@ -214,7 +215,7 @@ func calculateDewpoint(temperature float64, relativeHumidity float64) float64 {
 }
 
 func main() {
-	server.LoadEnv()
+	config.LoadEnv()
 
 	var err error
 	twinGraph, err = ktwingraph.LoadTwinGraphByInstances([]string{TWIN_INTERFACE_AIR_QUALITY_OBSERVED})
