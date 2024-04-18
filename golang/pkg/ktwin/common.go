@@ -1,16 +1,19 @@
 package ktwin
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/clock"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 )
@@ -30,24 +33,23 @@ func GetBrokerURL() string {
 	return os.Getenv("KTWIN_BROKER")
 }
 
-func PostCloudEvent(cloudEvent *cloudevents.Event, url string) error {
+func PostCloudEvent(event *cloudevents.Event, url string) error {
 	if os.Getenv("ENV") == "local" {
 		return nil
 	}
 
-	ctx := cloudevents.ContextWithTarget(context.Background(), GetBrokerURL())
+	client := NewClient()
+	response, err := client.Post(url, event)
 
-	c, err := cloudevents.NewClientHTTP()
 	if err != nil {
-		logger.NewLogger().Error("failed to create client", err)
-		return err
+		return errors.New("error to publish cloud event: " + err.Error())
 	}
 
-	if err := c.Send(ctx, *cloudEvent); err != nil {
-		return errors.New("Error to publish Cloud Event: " + err.Error())
+	if response.StatusCode != http.StatusNoContent {
+		return nil
 	}
 
-	return nil
+	return fmt.Errorf("error to publish cloud event. status code: %d", response.StatusCode)
 }
 
 func GetCloudEvent(cloudEvent *cloudevents.Event, url string) (*cloudevents.Event, error) {
@@ -69,6 +71,38 @@ func GetCloudEvent(cloudEvent *cloudevents.Event, url string) (*cloudevents.Even
 	}
 	return event, nil
 
+}
+
+type Client struct {
+	client http.Client
+}
+
+func NewClient() Client {
+	return Client{
+		client: http.Client{},
+	}
+}
+
+func (c *Client) Post(url string, event *cloudevents.Event) (*http.Response, error) {
+	req, err := c.createRequest(url, event)
+	if err != nil {
+		return nil, err
+	}
+	return c.client.Do(req)
+}
+
+func (c *Client) createRequest(url string, cloudEvent *cloudevents.Event) (*http.Request, error) {
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(cloudEvent.Data()))
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("ce-id", cloudEvent.ID())
+	req.Header.Set("ce-specversion", cloudEvent.SpecVersion())
+	req.Header.Set("ce-time", cloudEvent.Time().Format(time.RFC3339))
+	req.Header.Set("ce-source", cloudEvent.Source())
+	req.Header.Set("ce-type", cloudEvent.Type())
+	req.Header.Set("ce-subject", cloudEvent.Subject())
+
+	return req, nil
 }
 
 // TwinEvent
@@ -161,6 +195,7 @@ func (ktwinEvent *TwinEvent) SetEvent(twinInterface, twinInstance string, data i
 
 func BuildCloudEvent(ceType, ceSource string, data interface{}) *cloudevents.Event {
 	event := cloudevents.NewEvent()
+	event.SetTime(clock.Now())
 	event.SetType(ceType)
 	event.SetSource(ceSource)
 	event.SetData(cloudevents.ApplicationJSON, data)

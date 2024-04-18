@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/cloudevents/sdk-go/v2 v2.12.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/uuid v1.1.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/h2non/gock v1.2.0 // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect

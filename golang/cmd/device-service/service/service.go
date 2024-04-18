@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/device-service/model"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/clock"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kevent"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
@@ -24,6 +24,7 @@ func handleDeviceEvent(event *ktwin.TwinEvent) error {
 		BatteryThreshold = 15 // percentage of battery available
 	)
 
+	now := clock.Now()
 	device := model.Device{}
 	err := event.ToModel(&device)
 
@@ -32,7 +33,7 @@ func handleDeviceEvent(event *ktwin.TwinEvent) error {
 		return nil
 	}
 
-	device.DateObserved = time.Now()
+	device.DateObserved = now
 	logger.Info(fmt.Sprintf("CloudEvent: %v", string(event.CloudEvent.DataEncoded)))
 
 	if device.BatteryLevel != 0 {
