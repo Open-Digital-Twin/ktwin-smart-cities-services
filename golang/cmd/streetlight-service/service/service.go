@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/streetlight-service/model"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/clock"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kevent"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
@@ -17,7 +18,7 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 }
 
 func handleStreetLightEvent(event *ktwin.TwinEvent) error {
-	timeNow := time.Now()
+	timeNow := clock.Now()
 
 	var currentStreetlight model.Streetlight
 	err := event.ToModel(&currentStreetlight)
@@ -32,7 +33,7 @@ func handleStreetLightEvent(event *ktwin.TwinEvent) error {
 		return nil
 	}
 
-	latestEvent, err := keventstore.GetLatestTwinEvent(event.TwinInstance, event.TwinInterface)
+	latestEvent, err := keventstore.GetLatestTwinEvent(event.TwinInterface, event.TwinInstance)
 
 	if err != nil {
 		return err
@@ -45,6 +46,7 @@ func handleStreetLightEvent(event *ktwin.TwinEvent) error {
 		if currentStreetlight.PowerState == model.PowerOff {
 			currentStreetlight.DateLastSwitchingOff = timeNow
 		}
+		event.SetData(currentStreetlight)
 		return keventstore.UpdateTwinEvent(event)
 	}
 
@@ -57,19 +59,20 @@ func handleStreetLightEvent(event *ktwin.TwinEvent) error {
 
 	if latestStreetlight.PowerState == currentStreetlight.PowerState {
 		if currentStreetlight.PowerState == model.PowerOn {
-			if isWithDefect(timeNow, currentStreetlight.DateLastSwitchingOn) {
+			if isWithDefect(timeNow, latestStreetlight.DateLastSwitchingOn) {
 				currentStreetlight.Status = model.LampStatusDefective
 			}
 			currentStreetlight.DateLastSwitchingOn = timeNow
 		}
 		if currentStreetlight.PowerState == model.PowerOff {
-			if isWithDefect(timeNow, currentStreetlight.DateLastSwitchingOff) {
+			if isWithDefect(timeNow, latestStreetlight.DateLastSwitchingOff) {
 				currentStreetlight.Status = model.LampStatusDefective
 			}
 			currentStreetlight.DateLastSwitchingOff = timeNow
 		}
 	}
 
+	event.SetData(currentStreetlight)
 	return keventstore.UpdateTwinEvent(event)
 }
 
