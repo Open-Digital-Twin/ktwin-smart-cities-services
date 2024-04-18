@@ -155,7 +155,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 			name: `
 				Given event is published and it has previous event published
 				When new event has powerState "off" and latest event has powerState "off" and dateLastSwitchingOff is not older than 2 days
-				Should update the event with the new powerState and set the dateLastSwitchingOn
+				Should update the event with the new powerState and set the dateLastSwitchingOff
 			`,
 			twinEvent: func() *ktwin.TwinEvent {
 				twinEvent := ktwin.NewTwinEvent()
@@ -207,7 +207,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 			name: `
 				Given event is published and it has previous event published
 				When new event has powerState "off" and latest event has powerState "off" and dateLastSwitchingOff is older than 2 days
-				Should update the event with the new powerState and set the dateLastSwitchingOn
+				Should update the event with the new powerState and set the dateLastSwitchingOff
 			`,
 			twinEvent: func() *ktwin.TwinEvent {
 				twinEvent := ktwin.NewTwinEvent()
@@ -251,6 +251,111 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"circuit":"","status":"defectiveLamp","powerState":"off","dateLastLampChange":"0001-01-01T00:00:00Z","dateLastSwitchingOn":"0001-01-01T00:00:00Z","dateLastSwitchingOff":"2024-01-01T00:00:00Z","controllingMethod":"","dateServiceStarted":"0001-01-01T00:00:00Z","image":"","annotations":"","lanternHeight":0,"illuminanceLevel":0,"locationCategory":""}`).
+					Reply(200)
+
+			},
+			expectedError: nil,
+		},
+		{
+			name: `
+				Given event is published and it has previous event published
+				When new event has powerState "on" and latest event has powerState "on" and dateLastSwitchingOn is not older than 2 days
+				Should update the event with the new powerState and set the dateLastSwitchingOn
+			`,
+			twinEvent: func() *ktwin.TwinEvent {
+				twinEvent := ktwin.NewTwinEvent()
+				twinEvent.EventType = ktwin.RealEvent
+				twinEvent.TwinInstance = "ngsi-ld-city-streetlight-nb001-p00007"
+				twinEvent.TwinInterface = "ngsi-ld-city-streetlight"
+
+				cloudEvent := cloudevents.NewEvent()
+				cloudEvent.SetData("application/json", []byte(`{"powerState": "on"}`))
+				cloudEvent.SetID("")
+				cloudEvent.SetSource("ngsi-ld-city-streetlight-nb001-p00007")
+				cloudEvent.SetType("ktwin.real.ngsi-ld-city-streetlight")
+				cloudEvent.SetTime(dateTime)
+
+				twinEvent.CloudEvent = &cloudEvent
+				return twinEvent
+			},
+			mockExternalService: func() {
+				gock.New(s.eventStoreUrl).
+					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
+					Reply(200).
+					SetHeader("Content-Type", "application/json").
+					SetHeader("ce-specversion", "1.0").
+					SetHeader("ce-time", dateTimeFormatted).
+					SetHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
+					SetHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					SetHeader("ce-subject", "").
+					JSON(model.Streetlight{
+						PowerState:          "on",
+						DateLastSwitchingOn: dateTime,
+					})
+
+				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+					Post("/").
+					MatchHeader("Content-Type", "application/json").
+					MatchHeader("ce-id", "").
+					MatchHeader("ce-specversion", "1.0").
+					MatchHeader("ce-time", dateTimeFormatted).
+					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
+					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-subject", "").
+					BodyString(`{"circuit":"","status":"","powerState":"on","dateLastLampChange":"0001-01-01T00:00:00Z","dateLastSwitchingOn":"2024-01-01T00:00:00Z","dateLastSwitchingOff":"0001-01-01T00:00:00Z","controllingMethod":"","dateServiceStarted":"0001-01-01T00:00:00Z","image":"","annotations":"","lanternHeight":0,"illuminanceLevel":0,"locationCategory":""}`).
+					Reply(200)
+
+			},
+			expectedError: nil,
+		},
+		{
+			name: `
+				Given event is published and it has previous event published
+				When new event has powerState "off" and latest event has powerState "on" and dateLastSwitchingOff is older than 2 days
+				Should update the event with the new powerState and set the dateLastSwitchingOn
+			`,
+			twinEvent: func() *ktwin.TwinEvent {
+				twinEvent := ktwin.NewTwinEvent()
+				twinEvent.EventType = ktwin.RealEvent
+				twinEvent.TwinInstance = "ngsi-ld-city-streetlight-nb001-p00007"
+				twinEvent.TwinInterface = "ngsi-ld-city-streetlight"
+
+				cloudEvent := cloudevents.NewEvent()
+				cloudEvent.SetData("application/json", []byte(`{"powerState": "on"}`))
+				cloudEvent.SetID("")
+				cloudEvent.SetSource("ngsi-ld-city-streetlight-nb001-p00007")
+				cloudEvent.SetType("ktwin.real.ngsi-ld-city-streetlight")
+				cloudEvent.SetTime(dateTime)
+
+				twinEvent.CloudEvent = &cloudEvent
+				return twinEvent
+			},
+			mockExternalService: func() {
+				pastDateTime, _ := time.Parse("2006-01-02T15:04:05Z", "2023-01-01T00:00:00Z")
+				gock.New(s.eventStoreUrl).
+					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
+					Reply(200).
+					SetHeader("Content-Type", "application/json").
+					SetHeader("ce-specversion", "1.0").
+					SetHeader("ce-time", dateTimeFormatted).
+					SetHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
+					SetHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					SetHeader("ce-subject", "").
+					JSON(model.Streetlight{
+						PowerState:           "on",
+						DateLastSwitchingOff: pastDateTime,
+					})
+
+				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+					Post("/").
+					MatchHeader("Content-Type", "application/json").
+					MatchHeader("ce-id", "").
+					MatchHeader("ce-specversion", "1.0").
+					MatchHeader("ce-time", dateTimeFormatted).
+					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
+					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-subject", "").
+					BodyString(`{"circuit":"","status":"defectiveLamp","powerState":"on","dateLastLampChange":"0001-01-01T00:00:00Z","dateLastSwitchingOn":"2024-01-01T00:00:00Z","dateLastSwitchingOff":"0001-01-01T00:00:00Z","controllingMethod":"","dateServiceStarted":"0001-01-01T00:00:00Z","image":"","annotations":"","lanternHeight":0,"illuminanceLevel":0,"locationCategory":""}`).
 					Reply(200)
 
 			},
