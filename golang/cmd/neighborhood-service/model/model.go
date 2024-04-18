@@ -30,7 +30,7 @@ func GetQualityLevelInteger(aqi AQICategory) int {
 }
 
 const (
-	GOOD                           AQICategory = "Good"
+	GOOD                           AQICategory = "GOOD"
 	MODERATE                       AQICategory = "MODERATE"
 	UNHEALTHY_FOR_SENSITIVE_GROUPS AQICategory = "UNHEALTHY_FOR_SENSITIVE_GROUPS"
 	UNHEALTHY                      AQICategory = "UNHEALTHY"

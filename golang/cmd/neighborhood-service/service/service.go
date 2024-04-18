@@ -75,7 +75,7 @@ func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance kt
 	newQualityIndexInt := model.GetQualityLevelInteger(updateAirQualityIndexCommand.AqiLevel)
 	latestQualityIndexInt := model.GetQualityLevelInteger(neighborhood.AqiLevel)
 
-	if newQualityIndexInt > latestQualityIndexInt || hasTimeExpired(time.Now(), neighborhood.DateObserved, 60) {
+	if newQualityIndexInt > latestQualityIndexInt || hasTimeExpired(clock.Now(), neighborhood.DateObserved, 60) {
 		neighborhood.AqiLevel = updateAirQualityIndexCommand.AqiLevel
 		neighborhood.DateModified = clock.Now()
 	}
