@@ -30,14 +30,17 @@ func LoadTwinGraphByInstances(twinInstances []string) (ktwin.TwinGraph, error) {
 	}
 
 	ktwinGraph.TwinInstancesGraph = ktwinGraphList
-	writeTwinGraph(ktwinGraph)
+
+	if os.Getenv("ENV") != "local" && os.Getenv("ENV") != "test" {
+		writeTwinGraph(ktwinGraph)
+	}
 	return ktwinGraph, nil
 }
 
 func getTwinGraphInstance(twinInstance string) (*ktwin.TwinGraph, error) {
 	var ktwinGraph ktwin.TwinGraph
 
-	if os.Getenv("ENV") == "local" {
+	if os.Getenv("ENV") == "local" || os.Getenv("ENV") == "test" {
 		ktwinGraph, err := loadLocalTwinGraph()
 		return ktwinGraph, err
 	}

@@ -6,7 +6,10 @@ import (
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwingraph"
+	log "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 )
+
+var logger = log.NewLogger()
 
 // TwinCommand
 
@@ -29,7 +32,7 @@ func PublishCommand(command string, commandPayload interface{}, relationshipName
 }
 
 func HandleCommand(twinEvent *ktwin.TwinEvent, command string, twinGraph ktwin.TwinGraph, callback func(*ktwin.TwinEvent, ktwin.TwinInstanceReference) error) error {
-	if twinEvent.EventType != ktwin.CommandEvent {
+	if twinEvent.EventType == ktwin.CommandEvent {
 		targetTwinInstance := ktwingraph.GetTwinGraphByRelation(twinEvent.TwinInterface, twinEvent.TwinInstance, twinGraph)
 
 		if targetTwinInstance == nil {
@@ -40,8 +43,8 @@ func HandleCommand(twinEvent *ktwin.TwinEvent, command string, twinGraph ktwin.T
 		if strings.EqualFold(twinEvent.TwinInstance, targetTwinInstance.Instance) && strings.EqualFold(twinEvent.CommandName, command) {
 			return callback(twinEvent, *targetTwinInstance)
 		}
-	} else {
-		return fmt.Errorf("event is not a command event")
 	}
+
+	logger.Info("event is not a command event")
 	return nil
 }

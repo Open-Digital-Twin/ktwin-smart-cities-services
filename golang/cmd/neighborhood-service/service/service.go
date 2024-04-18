@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/neighborhood-service/model"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/clock"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kcommand"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
@@ -15,7 +16,7 @@ var logger = log.NewLogger()
 var twinGraph *ktwin.TwinGraph
 
 func loadTwinGraph() error {
-	if twinGraph != nil {
+	if twinGraph == nil {
 		var err error
 		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{model.TWIN_INTERFACE_NEIGHBORHOOD, model.TWIN_INTERFACE_CITY_POLE})
 		if err != nil {
@@ -36,7 +37,7 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 }
 
 func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {
-	latestEvent, err := keventstore.GetLatestTwinEvent(targetTwinInstance.Instance, targetTwinInstance.Instance)
+	latestEvent, err := keventstore.GetLatestTwinEvent(targetTwinInstance.Interface, targetTwinInstance.Instance)
 
 	if err != nil {
 		return err
@@ -45,14 +46,16 @@ func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance kt
 	var neighborhood model.Neighborhood
 
 	if latestEvent == nil {
-		now := time.Now()
+		now := clock.Now()
 		neighborhood = model.Neighborhood{
 			AqiLevel:     model.GOOD,
 			DateObserved: now,
 			DateModified: now,
 		}
+		latestEvent = ktwin.NewTwinEvent()
+		latestEvent.SetEvent(model.TWIN_INTERFACE_NEIGHBORHOOD, targetTwinInstance.Instance, ktwin.RealEvent, neighborhood)
 	} else {
-		err := latestEvent.ToModel(&neighborhood)
+		err = latestEvent.ToModel(&neighborhood)
 		if err != nil {
 			return err
 		}
@@ -74,7 +77,7 @@ func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance kt
 
 	if newQualityIndexInt > latestQualityIndexInt || hasTimeExpired(time.Now(), neighborhood.DateObserved, 60) {
 		neighborhood.AqiLevel = updateAirQualityIndexCommand.AqiLevel
-		neighborhood.DateModified = time.Now()
+		neighborhood.DateModified = clock.Now()
 	}
 
 	latestEvent.SetData(neighborhood)

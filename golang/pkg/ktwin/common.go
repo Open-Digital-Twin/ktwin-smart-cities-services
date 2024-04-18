@@ -186,10 +186,10 @@ func (k *TwinEvent) SetData(model interface{}) error {
 	return k.CloudEvent.SetData(cloudevents.ApplicationJSON, model)
 }
 
-func (ktwinEvent *TwinEvent) SetEvent(twinInterface, twinInstance string, data interface{}) {
+func (ktwinEvent *TwinEvent) SetEvent(twinInterface, twinInstance string, eventType EventType, data interface{}) {
 	ktwinEvent.TwinInterface = twinInterface
 	ktwinEvent.TwinInstance = twinInstance
-	ceType := fmt.Sprintf("ktwin.%s", ktwinEvent.TwinInterface)
+	ceType := fmt.Sprintf("ktwin.%s.%s", eventType, ktwinEvent.TwinInterface)
 	ktwinEvent.CloudEvent = BuildCloudEvent(ceType, twinInstance, data)
 }
 
