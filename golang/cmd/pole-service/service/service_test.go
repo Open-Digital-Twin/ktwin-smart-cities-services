@@ -111,7 +111,7 @@ func (s *PoleServiceSuite) Test_PoleAirQualityObservedEvent() {
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "city-pole-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.command.s4city-city-neighborhood.updateairqualityindex").
+					MatchHeader("ce-type", "ktwin.command.city-pole.updateairqualityindex").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"MODERATE"}`).
 					Reply(200)

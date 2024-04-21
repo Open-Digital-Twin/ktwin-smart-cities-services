@@ -19,7 +19,7 @@ func PublishCommand(command string, commandPayload interface{}, relationshipName
 		return fmt.Errorf("relationship %s not found in Twin Instance %s", relationshipName, twinInstanceSource)
 	}
 	ceType := fmt.Sprintf(ktwin.EventCommandExecuted, relationship.Interface, strings.ToLower(command))
-	ceSource := twinInstanceSource
+	ceSource := relationship.Instance
 	cloudEvent := ktwin.BuildCloudEvent(ceType, ceSource, commandPayload)
 
 	err := ktwin.PostCloudEvent(cloudEvent, ktwin.GetBrokerURL())
@@ -31,8 +31,8 @@ func PublishCommand(command string, commandPayload interface{}, relationshipName
 	return nil
 }
 
-func HandleCommand(twinEvent *ktwin.TwinEvent, command string, twinGraph ktwin.TwinGraph, callback func(*ktwin.TwinEvent, ktwin.TwinInstanceReference) error) error {
-	if twinEvent.EventType == ktwin.CommandEvent {
+func HandleCommand(twinEvent *ktwin.TwinEvent, twinInterface string, command string, twinGraph ktwin.TwinGraph, callback func(*ktwin.TwinEvent, ktwin.TwinInstanceReference) error) error {
+	if twinEvent.EventType == ktwin.CommandEvent && strings.EqualFold(twinEvent.TwinInterface, twinInterface) {
 		targetTwinInstance := ktwingraph.GetTwinGraphByRelation(twinEvent.TwinInterface, twinEvent.TwinInstance, twinGraph)
 
 		if targetTwinInstance == nil {
@@ -44,7 +44,5 @@ func HandleCommand(twinEvent *ktwin.TwinEvent, command string, twinGraph ktwin.T
 			return callback(twinEvent, *targetTwinInstance)
 		}
 	}
-
-	logger.Info("event is not a command event")
 	return nil
 }

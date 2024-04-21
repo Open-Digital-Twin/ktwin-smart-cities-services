@@ -33,7 +33,7 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 	if err != nil {
 		return err
 	}
-	return kcommand.HandleCommand(event, model.TWIN_COMMAND_UPDATE_AIR_QUALITY_INDEX, *twinGraph, handleUpdateAirQualityIndex)
+	return kcommand.HandleCommand(event, model.TWIN_INTERFACE_NEIGHBORHOOD, model.TWIN_COMMAND_UPDATE_AIR_QUALITY_INDEX, *twinGraph, handleUpdateAirQualityIndex)
 }
 
 func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {

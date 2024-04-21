@@ -30,7 +30,7 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 	if err != nil {
 		return err
 	}
-	return kcommand.HandleCommand(event, model.TWIN_COMMAND_UPDATE_VEHICLE_COUNT, *twinGraph, handleUpdateVehicleCountCommand)
+	return kcommand.HandleCommand(event, model.TWIN_INTERFACE_OFF_STREET_PARKING, model.TWIN_COMMAND_UPDATE_VEHICLE_COUNT, *twinGraph, handleUpdateVehicleCountCommand)
 }
 
 func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {
