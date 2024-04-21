@@ -110,8 +110,21 @@ type OffStreetParking struct {
 	MeasuresPeriodUnit  string            `json:"measuresPeriodUnit,omitempty"`
 	Occupancy           float64           `json:"occupancy,omitempty"`
 	OccupancyModified   float64           `json:"occupancyModified,omitempty"`
-	OccupiedSpotNumber  int               `json:"occupiedSpotNumber,omitempty"`
+	OccupiedSpotNumber  int               `json:"occupiedSpotNumber"`
+	TotalSpotNumber     int               `json:"totalSpotNumber"`
 	Status              string            `json:"status,omitempty"`
+}
+
+func (o *OffStreetParking) IncrementOccupiedSpotNumber() {
+	if o.OccupiedSpotNumber < o.TotalSpotNumber {
+		o.OccupiedSpotNumber++
+	}
+}
+
+func (o *OffStreetParking) DecrementOccupiedSpotNumber() {
+	if o.OccupiedSpotNumber > 0 {
+		o.OccupiedSpotNumber--
+	}
 }
 
 type Category string
