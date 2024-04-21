@@ -72,6 +72,31 @@ type UpdateAirQualityIndexCommand struct {
 	AqiLevel AQICategory `json:"aqiLevel,omitempty"`
 }
 
+func (u *UpdateAirQualityIndexCommand) SetAqiLevel(allLevels []AQICategory) {
+	for _, level := range allLevels {
+		if level == Hazardous {
+			u.AqiLevel = Hazardous
+			break
+		}
+		if level == VeryUnhealthy {
+			u.AqiLevel = VeryUnhealthy
+			break
+		}
+		if level == Unhealthy {
+			u.AqiLevel = Unhealthy
+			break
+		}
+		if level == UnhealthyForSensitiveGroups {
+			u.AqiLevel = UnhealthyForSensitiveGroups
+			break
+		}
+		if level == Moderate {
+			u.AqiLevel = Moderate
+			break
+		}
+	}
+}
+
 type AQIBreakpoints struct {
 	IndexBreakpointLow          float64
 	IndexBreakpointHigh         float64

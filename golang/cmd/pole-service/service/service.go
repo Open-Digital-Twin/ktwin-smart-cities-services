@@ -96,28 +96,7 @@ func handleAirQualityObservedEvent(event *ktwin.TwinEvent) error {
 	}
 
 	var updateAirQualityIndexCommand model.UpdateAirQualityIndexCommand
-	for _, level := range allLevels {
-		if level == model.Hazardous {
-			updateAirQualityIndexCommand.AqiLevel = model.Hazardous
-			break
-		}
-		if level == model.VeryUnhealthy {
-			updateAirQualityIndexCommand.AqiLevel = model.VeryUnhealthy
-			break
-		}
-		if level == model.Unhealthy {
-			updateAirQualityIndexCommand.AqiLevel = model.Unhealthy
-			break
-		}
-		if level == model.UnhealthyForSensitiveGroups {
-			updateAirQualityIndexCommand.AqiLevel = model.UnhealthyForSensitiveGroups
-			break
-		}
-		if level == model.Moderate {
-			updateAirQualityIndexCommand.AqiLevel = model.Moderate
-			break
-		}
-	}
+	updateAirQualityIndexCommand.SetAqiLevel(allLevels)
 
 	cityPoleRelation := ktwingraph.GetRelationshipFromGraph(event.TwinInstance, "citypole", *twinGraph)
 	if cityPoleRelation == nil {
