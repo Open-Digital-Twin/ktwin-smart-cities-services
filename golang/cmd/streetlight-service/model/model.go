@@ -24,17 +24,17 @@ const (
 )
 
 type Streetlight struct {
-	Circuit              string     `json:"circuit"`
-	Status               LampStatus `json:"status"`
-	PowerState           PowerState `json:"powerState"`
-	DateLastLampChange   time.Time  `json:"dateLastLampChange"`
-	DateLastSwitchingOn  time.Time  `json:"dateLastSwitchingOn"`
-	DateLastSwitchingOff time.Time  `json:"dateLastSwitchingOff"`
-	ControllingMethod    string     `json:"controllingMethod"`
-	DateServiceStarted   time.Time  `json:"dateServiceStarted"`
-	Image                string     `json:"image"`
-	Annotations          string     `json:"annotations"`
-	LanternHeight        float64    `json:"lanternHeight"`
-	IlluminanceLevel     float64    `json:"illuminanceLevel"`
-	LocationCategory     string     `json:"locationCategory"`
+	Circuit              string     `json:"circuit,omitempty"`
+	Status               LampStatus `json:"status,omitempty"`
+	PowerState           PowerState `json:"powerState,omitempty"`
+	DateLastLampChange   *time.Time `json:"dateLastLampChange,omitempty"`
+	DateLastSwitchingOn  *time.Time `json:"dateLastSwitchingOn,omitempty"`
+	DateLastSwitchingOff *time.Time `json:"dateLastSwitchingOff,omitempty"`
+	ControllingMethod    string     `json:"controllingMethod,omitempty"`
+	DateServiceStarted   *time.Time `json:"dateServiceStarted,omitempty"`
+	Image                string     `json:"image,omitempty"`
+	Annotations          string     `json:"annotations,omitempty"`
+	LanternHeight        float64    `json:"lanternHeight,omitempty"`
+	IlluminanceLevel     float64    `json:"illuminanceLevel,omitempty"`
+	LocationCategory     string     `json:"locationCategory,omitempty"`
 }

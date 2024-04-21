@@ -85,6 +85,6 @@ func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance kt
 	return keventstore.UpdateTwinEvent(latestEvent)
 }
 
-func hasTimeExpired(datetimeNow time.Time, datetimeObserved time.Time, minutes int) bool {
-	return datetimeNow.Sub(datetimeObserved).Minutes() > float64(minutes)
+func hasTimeExpired(datetimeNow *time.Time, datetimeObserved *time.Time, minutes int) bool {
+	return datetimeNow.Sub(*datetimeObserved).Minutes() > float64(minutes)
 }

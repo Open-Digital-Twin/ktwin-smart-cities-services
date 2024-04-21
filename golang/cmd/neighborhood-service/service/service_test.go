@@ -47,9 +47,9 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 		return DEFAULT_UUID
 	}
 
-	clock.NowFunc = func() time.Time {
+	clock.NowFunc = func() *time.Time {
 		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
-		return now
+		return &now
 	}
 	dateTime := clock.NowFunc()
 	dateTimeFormatted := dateTime.Format(time.RFC3339)
@@ -86,7 +86,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 				cloudEvent.SetID("")
 				cloudEvent.SetSource("s4city-city-neighborhood-nb001")
 				cloudEvent.SetType("ktwin.command.s4city-city-neighborhood.updateAirQualityIndex")
-				cloudEvent.SetTime(dateTime)
+				cloudEvent.SetTime(*dateTime)
 
 				twinEvent.CloudEvent = &cloudEvent
 				return twinEvent
@@ -130,7 +130,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 				cloudEvent.SetID("")
 				cloudEvent.SetSource("s4city-city-neighborhood-nb001")
 				cloudEvent.SetType("ktwin.command.s4city-city-neighborhood.updateAirQualityIndex")
-				cloudEvent.SetTime(dateTime)
+				cloudEvent.SetTime(*dateTime)
 
 				twinEvent.CloudEvent = &cloudEvent
 				return twinEvent
@@ -159,7 +159,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 					MatchHeader("ce-source", "s4city-city-neighborhood-nb001").
 					MatchHeader("ce-type", "ktwin.real.s4city-city-neighborhood").
 					MatchHeader("ce-subject", "").
-					BodyString(`{"aqiLevel":"UNHEALTHY","dateObserved":"2024-01-01T00:00:00Z","dateModified":"0001-01-01T00:00:00Z"}`).
+					BodyString(`{"aqiLevel":"UNHEALTHY","dateObserved":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
 			},
 			expectedError: nil,
@@ -184,7 +184,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 				cloudEvent.SetID("")
 				cloudEvent.SetSource("s4city-city-neighborhood-nb001")
 				cloudEvent.SetType("ktwin.command.s4city-city-neighborhood.updateAirQualityIndex")
-				cloudEvent.SetTime(dateTime)
+				cloudEvent.SetTime(*dateTime)
 
 				twinEvent.CloudEvent = &cloudEvent
 				return twinEvent

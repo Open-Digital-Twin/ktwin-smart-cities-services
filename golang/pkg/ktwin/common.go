@@ -183,7 +183,11 @@ func (k *TwinEvent) ToModel(model interface{}) error {
 }
 
 func (k *TwinEvent) SetData(model interface{}) error {
-	return k.CloudEvent.SetData(cloudevents.ApplicationJSON, model)
+	marshalledJson, err := json.Marshal(model)
+	if err != nil {
+		return err
+	}
+	return k.CloudEvent.SetData(cloudevents.ApplicationJSON, marshalledJson)
 }
 
 func (ktwinEvent *TwinEvent) SetEvent(twinInterface, twinInstance string, eventType EventType, data interface{}) {
@@ -195,7 +199,7 @@ func (ktwinEvent *TwinEvent) SetEvent(twinInterface, twinInstance string, eventT
 
 func BuildCloudEvent(ceType, ceSource string, data interface{}) *cloudevents.Event {
 	event := cloudevents.NewEvent()
-	event.SetTime(clock.Now())
+	event.SetTime(*clock.Now())
 	event.SetType(ceType)
 	event.SetSource(ceSource)
 	event.SetData(cloudevents.ApplicationJSON, data)

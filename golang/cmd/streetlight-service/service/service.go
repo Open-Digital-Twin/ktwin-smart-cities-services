@@ -77,7 +77,10 @@ func handleStreetLightEvent(event *ktwin.TwinEvent) error {
 }
 
 // In case of 48h of no change in the state, we consider that lamp with a defect
-func isWithDefect(datetimeNow time.Time, dateLastSwitching time.Time) bool {
-	timeDifference := datetimeNow.Sub(dateLastSwitching)
+func isWithDefect(datetimeNow *time.Time, dateLastSwitching *time.Time) bool {
+	if dateLastSwitching == nil {
+		return false
+	}
+	timeDifference := datetimeNow.Sub(*dateLastSwitching)
 	return timeDifference > time.Hour*48
 }

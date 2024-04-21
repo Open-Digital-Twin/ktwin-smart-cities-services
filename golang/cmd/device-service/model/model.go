@@ -7,11 +7,11 @@ const (
 )
 
 type Device struct {
-	DataProvider         string    `json:"dataProvider"`
-	BatteryLevel         float64   `json:"batteryLevel"`
-	MeasurementFrequency int       `json:"measurementFrequency"`
-	Source               string    `json:"source"`
-	DateCreated          time.Time `json:"dateCreated"`
-	DateObserved         time.Time `json:"dateObserved"`
-	DateModified         time.Time `json:"dateModified"`
+	DataProvider         string     `json:"dataProvider,omitempty"`
+	BatteryLevel         float64    `json:"batteryLevel,omitempty"`
+	MeasurementFrequency int        `json:"measurementFrequency,omitempty"`
+	Source               string     `json:"source,omitempty"`
+	DateCreated          *time.Time `json:"dateCreated,omitempty"`
+	DateObserved         *time.Time `json:"dateObserved,omitempty"`
+	DateModified         *time.Time `json:"dateModified,omitempty"`
 }

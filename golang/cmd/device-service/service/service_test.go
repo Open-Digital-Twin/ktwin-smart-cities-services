@@ -46,9 +46,9 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 		return DEFAULT_UUID
 	}
 
-	clock.NowFunc = func() time.Time {
+	clock.NowFunc = func() *time.Time {
 		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
-		return now
+		return &now
 	}
 	dateTime := clock.NowFunc()
 	dateTimeFormatted := dateTime.Format(time.RFC3339)
@@ -84,7 +84,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 				cloudEvent.SetID("")
 				cloudEvent.SetSource("ngsi-ld-city-device-nb001-ofp0003-s0012")
 				cloudEvent.SetType("ktwin.real.ngsi-ld-city-device")
-				cloudEvent.SetTime(dateTime)
+				cloudEvent.SetTime(*dateTime)
 
 				twinEvent.CloudEvent = &cloudEvent
 				return twinEvent
@@ -99,7 +99,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-source", "ngsi-ld-city-device-nb001-ofp0003-s0012").
 					MatchHeader("ce-type", "ktwin.virtual.ngsi-ld-city-device").
 					MatchHeader("ce-subject", "").
-					BodyString(`{"dataProvider":"","batteryLevel":20,"measurementFrequency":15,"source":"","dateCreated":"0001-01-01T00:00:00Z","dateObserved":"2024-01-01T00:00:00Z","dateModified":"0001-01-01T00:00:00Z"}`).
+					BodyString(`{"batteryLevel":20,"measurementFrequency":15,"dateObserved":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
 			},
 			expectedError: nil,
@@ -121,7 +121,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 				cloudEvent.SetID("e8e126f6-62fb-40fd-a7cd-8264ca8600d0")
 				cloudEvent.SetSource("ngsi-ld-city-device-nb001-ofp0003-s0012")
 				cloudEvent.SetType("ktwin.real.ngsi-ld-city-device")
-				cloudEvent.SetTime(dateTime)
+				cloudEvent.SetTime(*dateTime)
 
 				twinEvent.CloudEvent = &cloudEvent
 				return twinEvent
@@ -136,7 +136,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-source", "ngsi-ld-city-device-nb001-ofp0003-s0012").
 					MatchHeader("ce-type", "ktwin.virtual.ngsi-ld-city-device").
 					MatchHeader("ce-subject", "").
-					BodyString(`{\"dataProvider\":\"\",\"batteryLevel\":20,\"measurementFrequency\":15,\"source\":\"\",\"dateCreated\":\"0001-01-01T00:00:00Z\",\"dateObserved\":\"0001-01-01T00:00:00Z\",\"dateModified\":\"0001-01-01T00:00:00Z\"}`).
+					BodyString(`{"batteryLevel":20,"measurementFrequency":15}`).
 					Reply(200)
 			},
 			expectedError: nil,

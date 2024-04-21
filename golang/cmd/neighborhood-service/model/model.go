@@ -39,11 +39,11 @@ const (
 )
 
 type UpdateAirQualityIndexCommand struct {
-	AqiLevel AQICategory `json:"aqiLevel"`
+	AqiLevel AQICategory `json:"aqiLevel,omitempty"`
 }
 
 type Neighborhood struct {
-	AqiLevel     AQICategory `json:"aqiLevel"`
-	DateObserved time.Time   `json:"dateObserved"`
-	DateModified time.Time   `json:"dateModified"`
+	AqiLevel     AQICategory `json:"aqiLevel,omitempty"`
+	DateObserved *time.Time  `json:"dateObserved,omitempty"`
+	DateModified *time.Time  `json:"dateModified,omitempty"`
 }
