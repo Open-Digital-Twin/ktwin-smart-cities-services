@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/cmd/pole-service/model"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
@@ -181,50 +180,23 @@ func handleWeatherObservedEvent(event *ktwin.TwinEvent) error {
 	}
 
 	var latestWeatherObserved model.WeatherObservedEvent
-	err = latestEvent.ToModel(latestWeatherObserved)
+	err = latestEvent.ToModel(&latestWeatherObserved)
 
 	if err != nil {
 		return err
 	}
 
 	var weatherObserved model.WeatherObservedEvent
-	err = event.ToModel(weatherObserved)
+	err = event.ToModel(&weatherObserved)
 
 	if err != nil {
 		return err
 	}
 
-	weatherObserved.PressureTendency = model.PressureTendency(calculatePressureTendency(latestWeatherObserved, weatherObserved))
-	weatherObserved.FeelsLikeTemperature = calculateFeelLikeTemperature(weatherObserved.Temperature, weatherObserved.WindSpeed)
-	weatherObserved.Dewpoint = calculateDewpoint(weatherObserved.Temperature, weatherObserved.RelativeHumidity)
+	weatherObserved.SetPressureTendency(latestWeatherObserved.AtmosphericPressure)
+	weatherObserved.SetFeelsLikeTemperature(weatherObserved.Temperature, weatherObserved.WindSpeed)
+	weatherObserved.SetDewpoint(weatherObserved.Temperature, weatherObserved.RelativeHumidity)
 
 	event.SetData(weatherObserved)
 	return keventstore.UpdateTwinEvent(event)
-}
-
-func calculatePressureTendency(latestWeatherObserved model.WeatherObservedEvent, currentWeatherObserved model.WeatherObservedEvent) string {
-
-	latestPressure := latestWeatherObserved.AtmosphericPressure
-	currentPressure := currentWeatherObserved.AtmosphericPressure
-
-	if latestPressure == 0 || currentPressure == 0 {
-		return "steady"
-	}
-
-	difference := currentPressure - latestPressure
-	if difference < 0 {
-		return "falling"
-	}
-	if difference > 0 {
-		return "raising"
-	}
-	return "steady"
-}
-
-func calculateFeelLikeTemperature(temperature float64, windSpeed float64) float64 {
-	return 33 + (10*math.Sqrt(windSpeed)+10.45-windSpeed)*(temperature-33)/22
-}
-
-func calculateDewpoint(temperature float64, relativeHumidity float64) float64 {
-	return temperature - ((100 - relativeHumidity) / 5)
 }
