@@ -31,17 +31,10 @@ func PublishCommand(command string, commandPayload interface{}, relationshipName
 	return nil
 }
 
-func HandleCommand(twinEvent *ktwin.TwinEvent, twinInterface string, command string, twinGraph ktwin.TwinGraph, callback func(*ktwin.TwinEvent, ktwin.TwinInstanceReference) error) error {
+func HandleCommand(twinEvent *ktwin.TwinEvent, twinInterface string, command string, twinGraph ktwin.TwinGraph, callback func(*ktwin.TwinEvent) error) error {
 	if twinEvent.EventType == ktwin.CommandEvent && strings.EqualFold(twinEvent.TwinInterface, twinInterface) {
-		targetTwinInstance := ktwingraph.GetTwinGraphByRelation(twinEvent.TwinInterface, twinEvent.TwinInstance, twinGraph)
-
-		if targetTwinInstance == nil {
-			// TODO: need to handle the scenario where a TwinInterface has multiple relations with the same TwinInterface
-			return fmt.Errorf(fmt.Sprintf("Twin Instance %s does not have a relation with the target interface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
-		}
-
-		if strings.EqualFold(twinEvent.TwinInstance, targetTwinInstance.Instance) && strings.EqualFold(twinEvent.CommandName, command) {
-			return callback(twinEvent, *targetTwinInstance)
+		if strings.EqualFold(twinEvent.TwinInstance, twinEvent.TwinInstance) && strings.EqualFold(twinEvent.CommandName, command) {
+			return callback(twinEvent)
 		}
 	}
 	return nil

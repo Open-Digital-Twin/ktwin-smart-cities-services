@@ -36,8 +36,8 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 	return kcommand.HandleCommand(event, model.TWIN_INTERFACE_NEIGHBORHOOD, model.TWIN_COMMAND_UPDATE_AIR_QUALITY_INDEX, *twinGraph, handleUpdateAirQualityIndex)
 }
 
-func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {
-	latestEvent, err := keventstore.GetLatestTwinEvent(targetTwinInstance.Interface, targetTwinInstance.Instance)
+func handleUpdateAirQualityIndex(command *ktwin.TwinEvent) error {
+	latestEvent, err := keventstore.GetLatestTwinEvent(command.TwinInterface, command.TwinInstance)
 
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func handleUpdateAirQualityIndex(command *ktwin.TwinEvent, targetTwinInstance kt
 			DateModified: now,
 		}
 		latestEvent = ktwin.NewTwinEvent()
-		latestEvent.SetEvent(model.TWIN_INTERFACE_NEIGHBORHOOD, targetTwinInstance.Instance, ktwin.RealEvent, neighborhood)
+		latestEvent.SetEvent(command.TwinInterface, command.TwinInstance, ktwin.RealEvent, neighborhood)
 	} else {
 		err = latestEvent.ToModel(&neighborhood)
 		if err != nil {

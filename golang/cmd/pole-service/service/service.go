@@ -90,12 +90,12 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 	return nil
 }
 
-func handleCityPoleCommand(event *ktwin.TwinEvent, twinReference ktwin.TwinInstanceReference) error {
+func handleCityPoleCommand(event *ktwin.TwinEvent) error {
 	var updateAirQualityIndexCommand model.UpdateAirQualityIndexCommand
+	err := event.ToModel(&updateAirQualityIndexCommand)
 
-	cityPoleRelation := ktwingraph.GetRelationshipFromGraph(event.TwinInstance, TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_RELATIONSHIP_NAME, *twinGraph)
-	if cityPoleRelation == nil {
-		logger.Error(fmt.Sprintf("City pole relation not found for Twin Instance: %s\n", event.TwinInstance), nil)
+	if err != nil {
+		return err
 	}
 
 	if twinGraph == nil {
@@ -103,10 +103,10 @@ func handleCityPoleCommand(event *ktwin.TwinEvent, twinReference ktwin.TwinInsta
 		return nil
 	}
 
-	err := kcommand.PublishCommand(TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_UPDATE_AIR_QUALITY_INDEX, updateAirQualityIndexCommand, TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_RELATIONSHIP_NAME, cityPoleRelation.Instance, *twinGraph)
+	err = kcommand.PublishCommand(TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_UPDATE_AIR_QUALITY_INDEX, updateAirQualityIndexCommand, TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_RELATIONSHIP_NAME, event.TwinInstance, *twinGraph)
 
 	if err != nil {
-		logger.Error(fmt.Sprintf("Error executing command %s in relation %s in TwinInstance %s\n", TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_UPDATE_AIR_QUALITY_INDEX, TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_RELATIONSHIP_NAME, cityPoleRelation.Instance), err)
+		logger.Error(fmt.Sprintf("Error executing command %s in relation %s in TwinInstance %s\n", TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_UPDATE_AIR_QUALITY_INDEX, TWIN_COMMAND_CITY_POLE_NEIGHBORHOOD_RELATIONSHIP_NAME, event.TwinInstance), err)
 		return err
 	}
 

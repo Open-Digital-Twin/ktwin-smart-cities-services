@@ -122,7 +122,7 @@ func (s *ParkingSpotServiceSuite) Test_ParkingSpotEvent() {
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
-					MatchHeader("ce-source", "ngsi-ld-city-offstreetparkingspot-nb001-ofp0005-s0008").
+					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
 					MatchHeader("ce-type", "ktwin.command.ngsi-ld-city-offstreetparking.updatevehiclecount").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"vehicleEntranceCount":1}`).
@@ -159,7 +159,7 @@ func (s *ParkingSpotServiceSuite) Test_ParkingSpotEvent() {
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
-					MatchHeader("ce-source", "ngsi-ld-city-offstreetparkingspot-nb001-ofp0005-s0008").
+					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
 					MatchHeader("ce-type", "ktwin.command.ngsi-ld-city-offstreetparking.updatevehiclecount").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"vehicleExitCount":1}`).

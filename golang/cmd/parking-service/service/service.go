@@ -33,7 +33,7 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 	return kcommand.HandleCommand(event, model.TWIN_INTERFACE_OFF_STREET_PARKING, model.TWIN_COMMAND_UPDATE_VEHICLE_COUNT, *twinGraph, handleUpdateVehicleCountCommand)
 }
 
-func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent, targetTwinInstance ktwin.TwinInstanceReference) error {
+func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent) error {
 	var parking model.OffStreetParking
 	var commandPayload model.UpdateVehicleCountCommand
 	err := command.ToModel(&commandPayload)
@@ -46,7 +46,7 @@ func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent, targetTwinInstanc
 		return nil
 	}
 
-	latestEvent, err := keventstore.GetLatestTwinEvent(targetTwinInstance.Interface, targetTwinInstance.Instance)
+	latestEvent, err := keventstore.GetLatestTwinEvent(command.TwinInterface, command.TwinInstance)
 
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func handleUpdateVehicleCountCommand(command *ktwin.TwinEvent, targetTwinInstanc
 		}
 
 		newEvent := ktwin.NewTwinEvent()
-		newEvent.SetEvent(command.TwinInterface, targetTwinInstance.Instance, ktwin.RealEvent, parking)
+		newEvent.SetEvent(command.TwinInterface, command.TwinInstance, ktwin.RealEvent, parking)
 		newEvent.SetData(parking)
 		return keventstore.UpdateTwinEvent(newEvent)
 	}
