@@ -150,10 +150,9 @@ func handleCrowdFlowObservedEvent(event *ktwin.TwinEvent) error {
 }
 
 func handleTrafficFlowObservedEvent(event *ktwin.TwinEvent) error {
-
 	var trafficFlowObserved model.TrafficFlowObservedEvent
 
-	err := event.ToModel(trafficFlowObserved)
+	err := event.ToModel(&trafficFlowObserved)
 	if err != nil {
 		return err
 	}
