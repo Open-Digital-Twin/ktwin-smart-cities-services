@@ -164,6 +164,60 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 			},
 			expectedError: nil,
 		},
+		{
+			name: `
+				Given new command is received and there a previous event
+				When the new command has aqiLevel UNHEALTHY
+				AND previous event has aqiLevel GOOD
+				AND the time difference between the previous event and the current time is less than 60 minutes
+				Should update neighborhood event with aqiLevel UNHEALTHY
+			`,
+			twinEvent: func() *ktwin.TwinEvent {
+				twinEvent := ktwin.NewTwinEvent()
+				twinEvent.EventType = ktwin.CommandEvent
+				twinEvent.TwinInstance = "s4city-city-neighborhood-nb001"
+				twinEvent.TwinInterface = "s4city-city-neighborhood"
+				twinEvent.CommandName = "updateAirQualityIndex"
+
+				cloudEvent := cloudevents.NewEvent()
+				cloudEvent.SetData("application/json", []byte(`{"aqiLevel": "UNHEALTHY"}`))
+				cloudEvent.SetID("")
+				cloudEvent.SetSource("s4city-city-neighborhood-nb001")
+				cloudEvent.SetType("ktwin.command.s4city-city-neighborhood.updateAirQualityIndex")
+				cloudEvent.SetTime(dateTime)
+
+				twinEvent.CloudEvent = &cloudEvent
+				return twinEvent
+			},
+			mockExternalService: func() {
+				gock.New(s.eventStoreUrl).
+					Get("/api/v1/twin-events/s4city-city-neighborhood/s4city-city-neighborhood-nb001/latest").
+					Reply(200).
+					SetHeader("Content-Type", "application/json").
+					SetHeader("ce-specversion", "1.0").
+					SetHeader("ce-time", dateTimeFormatted).
+					SetHeader("ce-source", "s4city-city-neighborhood-nb001").
+					SetHeader("ce-type", "ktwin.real.s4city-city-neighborhood").
+					SetHeader("ce-subject", "").
+					JSON(model.Neighborhood{
+						AqiLevel:     model.GOOD,
+						DateObserved: dateTime,
+					})
+
+				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+					Post("/").
+					MatchHeader("Content-Type", "application/json").
+					MatchHeader("ce-id", "").
+					MatchHeader("ce-specversion", "1.0").
+					MatchHeader("ce-time", dateTimeFormatted).
+					MatchHeader("ce-source", "s4city-city-neighborhood-nb001").
+					MatchHeader("ce-type", "ktwin.real.s4city-city-neighborhood").
+					MatchHeader("ce-subject", "").
+					BodyString(`{"aqiLevel":"UNHEALTHY","dateObserved":"2024-01-01T00:00:00Z","dateModified":"2024-01-01T00:00:00Z"}`).
+					Reply(200)
+			},
+			expectedError: nil,
+		},
 	}
 	for _, tt := range tests {
 		s.Run(tt.name, func() {
