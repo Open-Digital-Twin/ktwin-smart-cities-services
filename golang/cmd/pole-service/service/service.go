@@ -74,11 +74,11 @@ func handleAirQualityObservedEvent(event *ktwin.TwinEvent) error {
 		return err
 	}
 
-	airQualityObserved.COAqiLevel = model.NewCOAirQualityIndex(airQualityObserved.CODensity).GetAirQualityCategory()
-	airQualityObserved.PM10AqiLevel = model.NewPM10AirQualityIndex(airQualityObserved.PM10Density).GetAirQualityCategory()
-	airQualityObserved.PM25AqiLevel = model.NewPM25AirQualityIndex(airQualityObserved.PM25Density).GetAirQualityCategory()
-	airQualityObserved.SO2AqiLevel = model.NewSO2AirQualityIndex(airQualityObserved.SO2Density).GetAirQualityCategory()
-	airQualityObserved.O3AqiLevel = model.NewO3AirQualityIndex(airQualityObserved.O3Density).GetAirQualityCategory()
+	airQualityObserved.CalcCOAqiLevel()
+	airQualityObserved.CalcPM10AqiLevel()
+	airQualityObserved.CalcPM25AqiLevel()
+	airQualityObserved.CalcSO2AqiLevel()
+	airQualityObserved.CalcO3AqiLevel()
 
 	event.SetData(airQualityObserved)
 	err = keventstore.UpdateTwinEvent(event)
@@ -122,6 +122,11 @@ func handleAirQualityObservedEvent(event *ktwin.TwinEvent) error {
 	cityPoleRelation := ktwingraph.GetRelationshipFromGraph(event.TwinInstance, "citypole", *twinGraph)
 	if cityPoleRelation == nil {
 		logger.Error(fmt.Sprintf("City pole relation not found for Twin Instance: %s\n", event.TwinInstance), nil)
+	}
+
+	if twinGraph == nil {
+		logger.Error("Twin Graph not loaded", nil)
+		return nil
 	}
 
 	err = kcommand.PublishCommand(TWIN_COMMAND_NEIGHBORHOOD_UPDATE_AIR_QUALITY_INDEX, updateAirQualityIndexCommand, TWIN_COMMAND_RELATIONSHIP_NEIGHBORHOOD_UPDATE_WEATHER, cityPoleRelation.Instance, *twinGraph)

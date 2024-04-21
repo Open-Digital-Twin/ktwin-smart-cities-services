@@ -48,6 +48,26 @@ type AirQualityEvent struct {
 	O3AqiLevel               AQICategory `json:"O3AqiLevel,omitempty"`
 }
 
+func (a *AirQualityEvent) CalcCOAqiLevel() {
+	a.COAqiLevel = NewCOAirQualityIndex(a.CODensity).GetAirQualityCategory()
+}
+
+func (a *AirQualityEvent) CalcPM10AqiLevel() {
+	a.PM10AqiLevel = NewPM10AirQualityIndex(a.PM10Density).GetAirQualityCategory()
+}
+
+func (a *AirQualityEvent) CalcPM25AqiLevel() {
+	a.PM25AqiLevel = NewPM25AirQualityIndex(a.PM25Density).GetAirQualityCategory()
+}
+
+func (a *AirQualityEvent) CalcSO2AqiLevel() {
+	a.SO2AqiLevel = NewSO2AirQualityIndex(a.SO2Density).GetAirQualityCategory()
+}
+
+func (a *AirQualityEvent) CalcO3AqiLevel() {
+	a.O3AqiLevel = NewO3AirQualityIndex(a.O3Density).GetAirQualityCategory()
+}
+
 type UpdateAirQualityIndexCommand struct {
 	AqiLevel AQICategory `json:"aqiLevel,omitempty"`
 }
