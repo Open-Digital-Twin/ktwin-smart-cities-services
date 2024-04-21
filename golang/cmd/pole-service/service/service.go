@@ -30,7 +30,7 @@ var logger = log.NewLogger()
 var twinGraph *ktwin.TwinGraph
 
 func loadTwinGraph() error {
-	if twinGraph != nil {
+	if twinGraph == nil {
 		var err error
 		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{TWIN_INTERFACE_AIR_QUALITY_OBSERVED})
 		if err != nil {
@@ -131,12 +131,12 @@ func handleAirQualityObservedEvent(event *ktwin.TwinEvent) error {
 func handleCrowdFlowObservedEvent(event *ktwin.TwinEvent) error {
 	var crowdFlowObserved model.CrowdFlowObservedEvent
 
-	err := event.ToModel(crowdFlowObserved)
+	err := event.ToModel(&crowdFlowObserved)
 	if err != nil {
 		return err
 	}
 
-	if crowdFlowObserved.AverageCrowdSpeed < CROWD_FLOW_AVERAGE_CROWD_SPEED_THRESHOLD {
+	if crowdFlowObserved.AverageCrowdSpeed < float64(CROWD_FLOW_AVERAGE_CROWD_SPEED_THRESHOLD) {
 		crowdFlowObserved.Congested = true
 	} else if crowdFlowObserved.AverageHeadwayTime < float64(CROWD_FLOW_HEADWAY_TIME_THRESHOLD) {
 		crowdFlowObserved.Congested = true
