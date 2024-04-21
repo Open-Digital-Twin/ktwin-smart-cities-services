@@ -71,20 +71,20 @@ func (s *PoleServiceSuite) Test_PoleAirQualityObservedEvent() {
 		},
 		{
 			name: `
-				Given new parking spot event is received
-				When new parking spot has status as occupied
-				Should generate command to increment vehicle entrance count
+				Given new air quality observed event is received
+				When all values are under a good AQI level
+				Should update event with calculated AQI levels and store it in event store
 			`,
 			twinEvent: func() *ktwin.TwinEvent {
 				twinEvent := ktwin.NewTwinEvent()
 				twinEvent.EventType = ktwin.CommandEvent
-				twinEvent.TwinInstance = "ngsi-ld-city-airqualityobserved-nb001-p00037"
-				twinEvent.TwinInterface = "ngsi-ld-city-offstreetparkingspot"
+				twinEvent.TwinInstance = "ngsi-ld-city-airqualityobserved-nb001-p00007"
+				twinEvent.TwinInterface = "ngsi-ld-city-airqualityobserved"
 
 				cloudEvent := cloudevents.NewEvent()
-				cloudEvent.SetData("application/json", []byte(`{"status": "occupied"}`))
+				cloudEvent.SetData("application/json", []byte(`{"CODensity": 8, "NO2Density": 8, "O3Density": 8, "SO2Density": 8, "PM10Density": 8, "PM25Density": 8}`))
 				cloudEvent.SetID("")
-				cloudEvent.SetSource("ngsi-ld-city-airqualityobserved-nb001-p00037")
+				cloudEvent.SetSource("ngsi-ld-city-airqualityobserved-nb001-p00007")
 				cloudEvent.SetType("ktwin.real.ngsi-ld-city-airqualityobserved")
 				cloudEvent.SetTime(*dateTime)
 
@@ -92,16 +92,28 @@ func (s *PoleServiceSuite) Test_PoleAirQualityObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
+				gock.New(s.eventStoreUrl).
+					Post("/api/v1/twin-events").
+					MatchHeader("Content-Type", "application/json").
+					MatchHeader("ce-id", "").
+					MatchHeader("ce-specversion", "1.0").
+					MatchHeader("ce-time", dateTimeFormatted).
+					MatchHeader("ce-source", "ngsi-ld-city-airqualityobserved-nb001-p00007").
+					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-airqualityobserved").
+					MatchHeader("ce-subject", "").
+					BodyString(`{"CODensity":8,"PM10Density":8,"PM25Density":8,"SO2Density":8,"NO2Density":8,"O3Density":8,"COAqiLevel":"MODERATE","PM10AqiLevel":"GOOD","PM25AqiLevel":"GOOD","SO2AqiLevel":"GOOD","O3AqiLevel":"GOOD"}`).
+					Reply(200)
+
 				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
-					MatchHeader("ce-source", "ngsi-ld-city-offstreetparkingspot-nb001-ofp0005-s0008").
-					MatchHeader("ce-type", "ktwin.command.ngsi-ld-city-offstreetparking.updatevehiclecount").
+					MatchHeader("ce-source", "city-pole-nb001-p00007").
+					MatchHeader("ce-type", "ktwin.command.s4city-city-neighborhood.updateairqualityindex").
 					MatchHeader("ce-subject", "").
-					BodyString(`{"vehicleEntranceCount":1}`).
+					BodyString(`{"aqiLevel":"MODERATE"}`).
 					Reply(200)
 			},
 			expectedError: nil,

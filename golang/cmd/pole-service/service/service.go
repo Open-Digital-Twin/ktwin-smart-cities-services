@@ -18,6 +18,8 @@ var (
 	TWIN_INTERFACE_CROWD_FLOW_OBSERVED   = "ngsi-ld-city-crowdflowobserved"
 	TWIN_INTERFACE_TRAFFIC_FLOW_OBSERVED = "ngsi-ld-city-trafficflowobserved"
 
+	TWIN_COMMAND_NEIGHBORHOOD_UPDATE_AIR_QUALITY_INDEX = "updateAirQualityIndex"
+
 	CROWD_FLOW_AVERAGE_CROWD_SPEED_THRESHOLD = 4
 	CROWD_FLOW_HEADWAY_TIME_THRESHOLD        = 2
 
@@ -78,7 +80,11 @@ func handleAirQualityObservedEvent(event *ktwin.TwinEvent) error {
 	airQualityObserved.O3AqiLevel = model.NewO3AirQualityIndex(airQualityObserved.O3Density).GetAirQualityCategory()
 
 	event.SetData(airQualityObserved)
-	keventstore.UpdateTwinEvent(event)
+	err = keventstore.UpdateTwinEvent(event)
+
+	if err != nil {
+		return err
+	}
 
 	allLevels := []model.AQICategory{
 		airQualityObserved.COAqiLevel,
