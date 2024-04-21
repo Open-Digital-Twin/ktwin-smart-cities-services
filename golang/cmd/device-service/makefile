@@ -3,3 +3,7 @@ run-local:
 
 unit-test:
 	go test .
+
+test-cov:
+	go test -coverprofile=coverage.out ./service
+	go tool cover -html=coverage.out
