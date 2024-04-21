@@ -4,7 +4,10 @@ import "time"
 
 type NowTimeFunc func() *time.Time
 
-var NowFunc NowTimeFunc
+var NowFunc NowTimeFunc = func() *time.Time {
+	now := time.Now()
+	return &now
+}
 
 func ResetClockImplementation() {
 	NowFunc = func() *time.Time {
