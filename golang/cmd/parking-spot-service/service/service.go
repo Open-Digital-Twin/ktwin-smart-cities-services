@@ -8,7 +8,6 @@ import (
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kcommand"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/kevent"
-	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/keventstore"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwingraph"
 	log "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 )
@@ -17,7 +16,7 @@ var logger = log.NewLogger()
 var twinGraph *ktwin.TwinGraph
 
 func loadTwinGraph() error {
-	if twinGraph != nil {
+	if twinGraph == nil {
 		var err error
 		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{model.TWIN_INTERFACE_PARKING_SPOT})
 		if err != nil {
@@ -51,29 +50,18 @@ func handleParkingSpotEvent(event *ktwin.TwinEvent) error {
 		return nil
 	}
 
-	latestParkingSpot, err := keventstore.GetLatestTwinEvent(event.TwinInstance, event.TwinInterface)
-
-	if err != nil {
-		return err
-	}
-
-	if latestParkingSpot == nil {
-		logger.Info(fmt.Sprintf("No previous parking spot event found for instance %s", event.TwinInstance))
-		return nil
-	}
-
 	if parkingSpot.Status == model.Occupied {
 		updateCommand := parkingModel.UpdateVehicleCountCommand{
 			VehicleEntranceCount: 1,
 		}
-		return kcommand.PublishCommand(model.TWIN_COMMAND_PARKING_UPDATE_VEHICLE_COUNT, updateCommand, model.TWIN_INTERFACE_OFF_STREET_PARKING_RELATIONSHIP, latestParkingSpot.TwinInstance, *twinGraph)
+		return kcommand.PublishCommand(model.TWIN_COMMAND_PARKING_UPDATE_VEHICLE_COUNT, updateCommand, model.TWIN_INTERFACE_OFF_STREET_PARKING_RELATIONSHIP, event.TwinInstance, *twinGraph)
 	}
 
 	if parkingSpot.Status == model.Free {
 		updateCommand := parkingModel.UpdateVehicleCountCommand{
 			VehicleExitCount: 1,
 		}
-		return kcommand.PublishCommand(model.TWIN_COMMAND_PARKING_UPDATE_VEHICLE_COUNT, updateCommand, model.TWIN_INTERFACE_OFF_STREET_PARKING_RELATIONSHIP, latestParkingSpot.TwinInstance, *twinGraph)
+		return kcommand.PublishCommand(model.TWIN_COMMAND_PARKING_UPDATE_VEHICLE_COUNT, updateCommand, model.TWIN_INTERFACE_OFF_STREET_PARKING_RELATIONSHIP, event.TwinInstance, *twinGraph)
 	}
 
 	logger.Info(fmt.Sprintf("ParkingSpot status is not recognized for instance %s", event.TwinInstance))
