@@ -29,7 +29,6 @@ func GetEventStoreURL() string {
 }
 
 func GetBrokerURL() string {
-	fmt.Printf("Broker URL: %s\n", os.Getenv("KTWIN_BROKER"))
 	return os.Getenv("KTWIN_BROKER")
 }
 
