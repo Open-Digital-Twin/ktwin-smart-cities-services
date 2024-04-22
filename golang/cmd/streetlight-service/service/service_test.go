@@ -48,7 +48,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 	}
 
 	clock.NowFunc = func() *time.Time {
-		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
+		now, _ := time.Parse(time.RFC3339, "2024-01-01T00:00:00Z")
 		return &now
 	}
 	dateTime := clock.NowFunc()
@@ -226,7 +226,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				pastDateTime, _ := time.Parse("2006-01-02T15:04:05Z", "2023-01-01T00:00:00Z")
+				pastDateTime, _ := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
 					Reply(200).
@@ -331,7 +331,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				pastDateTime, _ := time.Parse("2006-01-02T15:04:05Z", "2023-01-01T00:00:00Z")
+				pastDateTime, _ := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
 					Reply(200).

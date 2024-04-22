@@ -49,7 +49,7 @@ func (s *PoleServiceSuite) Test_PoleUpdateAirQualityCommandEvent() {
 	}
 
 	clock.NowFunc = func() *time.Time {
-		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
+		now, _ := time.Parse(time.RFC3339, "2024-01-01T00:00:00Z")
 		return &now
 	}
 	dateTime := clock.NowFunc()
@@ -129,7 +129,7 @@ func (s *PoleServiceSuite) Test_PoleAirQualityObservedEvent() {
 	}
 
 	clock.NowFunc = func() *time.Time {
-		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
+		now, _ := time.Parse(time.RFC3339, "2024-01-01T00:00:00Z")
 		return &now
 	}
 	dateTime := clock.NowFunc()
@@ -220,7 +220,7 @@ func (s *PoleServiceSuite) Test_PoleCrowdFlowObservedEvent() {
 	}
 
 	clock.NowFunc = func() *time.Time {
-		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
+		now, _ := time.Parse(time.RFC3339, "2024-01-01T00:00:00Z")
 		return &now
 	}
 	dateTime := clock.NowFunc()
@@ -410,7 +410,7 @@ func (s *PoleServiceSuite) Test_PoleTrafficFlowObservedEvent() {
 	}
 
 	clock.NowFunc = func() *time.Time {
-		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
+		now, _ := time.Parse(time.RFC3339, "2024-01-01T00:00:00Z")
 		return &now
 	}
 	dateTime := clock.NowFunc()
@@ -600,7 +600,7 @@ func (s *PoleServiceSuite) Test_PoleWeatherObservedEvent() {
 	}
 
 	clock.NowFunc = func() *time.Time {
-		now, _ := time.Parse("2006-01-02T15:04:05Z", "2024-01-01T00:00:00Z")
+		now, _ := time.Parse(time.RFC3339, "2024-01-01T00:00:00Z")
 		return &now
 	}
 	dateTime := clock.NowFunc()
