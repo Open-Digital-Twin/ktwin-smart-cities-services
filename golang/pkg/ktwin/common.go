@@ -22,6 +22,7 @@ const (
 	EventRealGenerated    = "ktwin.real.%s"
 	EventVirtualGenerated = "ktwin.virtual.%s"
 	EventCommandExecuted  = "ktwin.command.%s.%s"
+	EventStoreGenerated   = "ktwin.store.%s"
 )
 
 func GetEventStoreURL() string {
@@ -167,8 +168,10 @@ func (k *TwinEvent) HandleResponse(r *http.Response) error {
 		log.Printf("failed to parse CloudEvent from request: %v", err)
 		return err
 	}
+	ceType := strings.Split(cloudEvent.Type(), ".")
 	k.TwinInstance = cloudEvent.Source()
-	k.TwinInterface = cloudEvent.Type()
+	k.EventType = EventType(ceType[1])
+	k.TwinInterface = ceType[2]
 	k.CloudEvent = cloudEvent
 	return nil
 }

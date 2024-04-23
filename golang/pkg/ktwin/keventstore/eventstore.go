@@ -40,6 +40,7 @@ func UpdateTwinEvent(twinEvent *ktwin.TwinEvent) error {
 		return nil
 	}
 
-	url := ktwin.GetEventStoreURL() + "/api/v1/twin-events"
+	url := ktwin.GetBrokerURL()
+	twinEvent.CloudEvent.SetType(fmt.Sprintf(ktwin.EventStoreGenerated, twinEvent.TwinInterface))
 	return ktwin.PostCloudEvent(twinEvent.CloudEvent, url)
 }

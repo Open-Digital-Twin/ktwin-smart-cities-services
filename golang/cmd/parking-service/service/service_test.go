@@ -122,14 +122,14 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 					Get("/api/v1/twin-events/ngsi-ld-city-offstreetparking/ngsi-ld-city-offstreetparking-nb001-ofp0005/latest").
 					Reply(404)
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-offstreetparking").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":1,"totalSpotNumber":50}`).
 					Reply(200)
@@ -164,14 +164,14 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 					Get("/api/v1/twin-events/ngsi-ld-city-offstreetparking/ngsi-ld-city-offstreetparking-nb001-ofp0005/latest").
 					Reply(404)
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-offstreetparking").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":0,"totalSpotNumber":50}`).
 					Reply(200)
@@ -216,14 +216,14 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 						TotalSpotNumber:    50,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-offstreetparking").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":0,"totalSpotNumber":50}`).
 					Reply(200)
@@ -268,14 +268,14 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 						TotalSpotNumber:    50,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-offstreetparking").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":2,"totalSpotNumber":50}`).
 					Reply(200)

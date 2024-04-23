@@ -172,14 +172,14 @@ func (s *PoleServiceSuite) Test_PoleAirQualityObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-airqualityobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-airqualityobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-airqualityobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"CODensity":8,"PM10Density":8,"PM25Density":8,"SO2Density":8,"NO2Density":8,"O3Density":8,"COAqiLevel":"MODERATE","PM10AqiLevel":"GOOD","PM25AqiLevel":"GOOD","SO2AqiLevel":"GOOD","O3AqiLevel":"GOOD"}`).
 					Reply(200)
@@ -263,14 +263,14 @@ func (s *PoleServiceSuite) Test_PoleCrowdFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-crowdflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-crowdflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":2,"congested":true,"averageHeadwayTime":1}`).
 					Reply(200)
@@ -300,14 +300,14 @@ func (s *PoleServiceSuite) Test_PoleCrowdFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-crowdflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-crowdflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":2,"congested":true,"averageHeadwayTime":2}`).
 					Reply(200)
@@ -337,14 +337,14 @@ func (s *PoleServiceSuite) Test_PoleCrowdFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-crowdflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-crowdflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":4,"congested":true,"averageHeadwayTime":1}`).
 					Reply(200)
@@ -374,14 +374,14 @@ func (s *PoleServiceSuite) Test_PoleCrowdFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-crowdflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-crowdflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":5,"congested":false,"averageHeadwayTime":3}`).
 					Reply(200)
@@ -453,14 +453,14 @@ func (s *PoleServiceSuite) Test_PoleTrafficFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-trafficflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-trafficflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-trafficflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageVehicleSpeed":3,"congested":true,"averageHeadwayTime":1}`).
 					Reply(200)
@@ -490,14 +490,14 @@ func (s *PoleServiceSuite) Test_PoleTrafficFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-trafficflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-trafficflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-trafficflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageVehicleSpeed":3,"congested":true,"averageHeadwayTime":3}`).
 					Reply(200)
@@ -527,14 +527,14 @@ func (s *PoleServiceSuite) Test_PoleTrafficFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-trafficflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-trafficflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-trafficflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageVehicleSpeed":13,"congested":true,"averageHeadwayTime":1}`).
 					Reply(200)
@@ -564,14 +564,14 @@ func (s *PoleServiceSuite) Test_PoleTrafficFlowObservedEvent() {
 				return twinEvent
 			},
 			mockExternalService: func() {
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-trafficflowobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-trafficflowobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-trafficflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageVehicleSpeed":13,"congested":false,"averageHeadwayTime":3}`).
 					Reply(200)
@@ -647,14 +647,14 @@ func (s *PoleServiceSuite) Test_PoleWeatherObservedEvent() {
 					Get("/api/v1/twin-events/ngsi-ld-city-weatherobserved/ngsi-ld-city-weatherobserved-nb001-p00007/latest").
 					Reply(http.StatusNotFound)
 
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-weatherobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-weatherobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"steady","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
 					Reply(http.StatusOK)
@@ -700,14 +700,14 @@ func (s *PoleServiceSuite) Test_PoleWeatherObservedEvent() {
 						WindSpeed:           2,
 					})
 
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-weatherobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-weatherobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"raising","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
 					Reply(http.StatusOK)
@@ -753,14 +753,14 @@ func (s *PoleServiceSuite) Test_PoleWeatherObservedEvent() {
 						WindSpeed:           2,
 					})
 
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-weatherobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-weatherobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"falling","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
 					Reply(http.StatusOK)
@@ -806,14 +806,14 @@ func (s *PoleServiceSuite) Test_PoleWeatherObservedEvent() {
 						WindSpeed:           2,
 					})
 
-				gock.New(s.eventStoreUrl).
-					Post("/api/v1/twin-events").
+				gock.New(s.brokerUrl).
+					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-weatherobserved-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-weatherobserved").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"steady","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
 					Reply(http.StatusOK)

@@ -96,14 +96,14 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 					Get("/api/v1/twin-events/s4city-city-neighborhood/s4city-city-neighborhood-nb001/latest").
 					Reply(404)
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "s4city-city-neighborhood-nb001").
-					MatchHeader("ce-type", "ktwin.real.s4city-city-neighborhood").
+					MatchHeader("ce-type", "ktwin.store.s4city-city-neighborhood").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"GOOD","dateObserved":"2024-01-01T00:00:00Z","dateModified":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
@@ -150,14 +150,14 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 						DateObserved: dateTime,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "s4city-city-neighborhood-nb001").
-					MatchHeader("ce-type", "ktwin.real.s4city-city-neighborhood").
+					MatchHeader("ce-type", "ktwin.store.s4city-city-neighborhood").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"UNHEALTHY","dateObserved":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
@@ -204,14 +204,14 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 						DateObserved: dateTime,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "s4city-city-neighborhood-nb001").
-					MatchHeader("ce-type", "ktwin.real.s4city-city-neighborhood").
+					MatchHeader("ce-type", "ktwin.store.s4city-city-neighborhood").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"UNHEALTHY","dateObserved":"2024-01-01T00:00:00Z","dateModified":"2024-01-01T00:00:00Z"}`).
 					Reply(200)

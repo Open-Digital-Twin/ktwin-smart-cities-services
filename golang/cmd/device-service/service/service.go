@@ -55,7 +55,7 @@ func handleDeviceEvent(event *ktwin.TwinEvent) error {
 			}
 		}
 		event.SetData(device)
-		keventstore.UpdateTwinEvent(event)
+		return keventstore.UpdateTwinEvent(event)
 	} else {
 		logger.Info("Battery level was not provided")
 	}

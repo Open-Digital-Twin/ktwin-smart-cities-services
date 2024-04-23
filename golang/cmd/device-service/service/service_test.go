@@ -101,6 +101,18 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-subject", "").
 					BodyString(`{"batteryLevel":20,"measurementFrequency":15,"dateObserved":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
+
+				gock.New(s.brokerUrl).
+					Post("/").
+					MatchHeader("Content-Type", "application/json").
+					MatchHeader("ce-id", "").
+					MatchHeader("ce-specversion", "1.0").
+					MatchHeader("ce-time", dateTimeFormatted).
+					MatchHeader("ce-source", "ngsi-ld-city-device-nb001-ofp0003-s0012").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-device").
+					MatchHeader("ce-subject", "").
+					BodyString(`{"batteryLevel":20,"measurementFrequency":15,"dateObserved":"2024-01-01T00:00:00Z"}`).
+					Reply(200)
 			},
 			expectedError: nil,
 		},
@@ -137,6 +149,18 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-type", "ktwin.virtual.ngsi-ld-city-device").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"batteryLevel":20,"measurementFrequency":15}`).
+					Reply(200)
+
+				gock.New(s.brokerUrl).
+					Post("/").
+					MatchHeader("Content-Type", "application/json").
+					MatchHeader("ce-id", "").
+					MatchHeader("ce-specversion", "1.0").
+					MatchHeader("ce-time", dateTimeFormatted).
+					MatchHeader("ce-source", "ngsi-ld-city-device-nb001-ofp0003-s0012").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-device").
+					MatchHeader("ce-subject", "").
+					BodyString(`{"batteryLevel":15,"dateObserved":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
 			},
 			expectedError: nil,

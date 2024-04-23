@@ -95,14 +95,14 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
 					Reply(404)
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"on","dateLastSwitchingOn":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
@@ -136,14 +136,14 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
 					Reply(404)
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"off","dateLastSwitchingOff":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
@@ -188,14 +188,14 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 						DateLastSwitchingOff: dateTime,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"off","dateLastSwitchingOff":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
@@ -241,14 +241,14 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 						DateLastSwitchingOff: &pastDateTime,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"status":"defectiveLamp","powerState":"off","dateLastSwitchingOff":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
@@ -293,14 +293,14 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 						DateLastSwitchingOn: dateTime,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"on","dateLastSwitchingOn":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
@@ -346,14 +346,14 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 						DateLastSwitchingOn: &pastDateTime,
 					})
 
-				gock.New(s.eventStoreUrl+"/api/v1/twin-events").
+				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-streetlight-nb001-p00007").
-					MatchHeader("ce-type", "ktwin.real.ngsi-ld-city-streetlight").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"status":"defectiveLamp","powerState":"on","dateLastSwitchingOn":"2024-01-01T00:00:00Z"}`).
 					Reply(200)
