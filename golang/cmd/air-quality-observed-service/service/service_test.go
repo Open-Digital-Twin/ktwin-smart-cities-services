@@ -18,19 +18,19 @@ const (
 	DEFAULT_UUID = "e8e126f6-62fb-40fd-a7cd-8264ca8600d0"
 )
 
-func TestPoleServiceSuite(t *testing.T) {
+func TestAirQualityObservedServiceSuite(t *testing.T) {
 
-	suite.Run(t, new(PoleServiceSuite))
+	suite.Run(t, new(AirQualityObservedServiceSuite))
 }
 
-type PoleServiceSuite struct {
+type AirQualityObservedServiceSuite struct {
 	suite.Suite
 
 	brokerUrl     string
 	eventStoreUrl string
 }
 
-func (s *PoleServiceSuite) SetupSuite() {
+func (s *AirQualityObservedServiceSuite) SetupSuite() {
 	os.Setenv("ENV", "test")
 	config.LoadEnv()
 
@@ -38,7 +38,7 @@ func (s *PoleServiceSuite) SetupSuite() {
 	s.eventStoreUrl = os.Getenv("KTWIN_EVENT_STORE")
 }
 
-func (s *PoleServiceSuite) Test_PoleUpdateAirQualityCommandEvent() {
+func (s *AirQualityObservedServiceSuite) Test_PoleAirQualityObservedEvent() {
 	defer clock.ResetClockImplementation()
 	defer uuid.ResetUuidImplementation()
 
@@ -69,22 +69,21 @@ func (s *PoleServiceSuite) Test_PoleUpdateAirQualityCommandEvent() {
 		},
 		{
 			name: `
-				Given update air quality command event is received
-				When value contains AQI levels
-				Should propagate AQI levels to the neighborhood
+				Given new air quality observed event is received
+				When all values are under a good AQI level
+				Should update event with calculated AQI levels and store it in event store
 			`,
 			twinEvent: func() *ktwin.TwinEvent {
 				twinEvent := ktwin.NewTwinEvent()
 				twinEvent.EventType = ktwin.CommandEvent
-				twinEvent.TwinInstance = "city-pole-nb001-p00007"
-				twinEvent.TwinInterface = "city-pole"
-				twinEvent.CommandName = "updateAirQualityIndex"
+				twinEvent.TwinInstance = "ngsi-ld-city-airqualityobserved-nb001-p00007"
+				twinEvent.TwinInterface = "ngsi-ld-city-airqualityobserved"
 
 				cloudEvent := cloudevents.NewEvent()
-				cloudEvent.SetData("application/json", []byte(`{"aqiLevel":"MODERATE"}`))
+				cloudEvent.SetData("application/json", []byte(`{"CODensity": 8, "NO2Density": 8, "O3Density": 8, "SO2Density": 8, "PM10Density": 8, "PM25Density": 8}`))
 				cloudEvent.SetID("")
-				cloudEvent.SetSource("city-pole-nb001-p00007")
-				cloudEvent.SetType("ktwin.real.city-pole")
+				cloudEvent.SetSource("ngsi-ld-city-airqualityobserved-nb001-p00007")
+				cloudEvent.SetType("ktwin.real.ngsi-ld-city-airqualityobserved")
 				cloudEvent.SetTime(*dateTime)
 
 				twinEvent.CloudEvent = &cloudEvent
@@ -97,8 +96,20 @@ func (s *PoleServiceSuite) Test_PoleUpdateAirQualityCommandEvent() {
 					MatchHeader("ce-id", "").
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
-					MatchHeader("ce-source", "s4city-city-neighborhood-nb001").
-					MatchHeader("ce-type", "ktwin.command.s4city-city-neighborhood.updateairqualityindex").
+					MatchHeader("ce-source", "ngsi-ld-city-airqualityobserved-nb001-p00007").
+					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-airqualityobserved").
+					MatchHeader("ce-subject", "").
+					BodyString(`{"CODensity":8,"PM10Density":8,"PM25Density":8,"SO2Density":8,"NO2Density":8,"O3Density":8,"COAqiLevel":"MODERATE","PM10AqiLevel":"GOOD","PM25AqiLevel":"GOOD","SO2AqiLevel":"GOOD","O3AqiLevel":"GOOD"}`).
+					Reply(200)
+
+				gock.New(s.brokerUrl).
+					Post("/").
+					MatchHeader("Content-Type", "application/json").
+					MatchHeader("ce-id", "").
+					MatchHeader("ce-specversion", "1.0").
+					MatchHeader("ce-time", dateTimeFormatted).
+					MatchHeader("ce-source", "city-pole-nb001-p00007").
+					MatchHeader("ce-type", "ktwin.command.city-pole.updateairqualityindex").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"MODERATE"}`).
 					Reply(200)
