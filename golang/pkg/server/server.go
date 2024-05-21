@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
@@ -20,12 +19,6 @@ func StartServer(handleFuncTwin HandlerEventFunc) {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Error handling cloud event request"))
 			return
-		}
-
-		if twinEvent.EventType == ktwin.CommandEvent {
-			logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s - Event CommandName: %s", twinEvent.TwinInstance, twinEvent.TwinInterface, twinEvent.CommandName))
-		} else {
-			logger.Info(fmt.Sprintf("Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
 		}
 
 		if err := handleFuncTwin(twinEvent); err != nil {

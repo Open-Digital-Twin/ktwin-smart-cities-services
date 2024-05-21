@@ -39,8 +39,21 @@ func HandleRequest(r *http.Request) *ktwin.TwinEvent {
 
 func HandleEvent(twinEvent *ktwin.TwinEvent, twinInterface string, callback func(*ktwin.TwinEvent) error) error {
 	if twinEvent.TwinInterface == twinInterface {
+		if twinEvent.EventType == ktwin.CommandEvent {
+			logger.Info(fmt.Sprintf("Handling Event TwinInstance: %s - Event TwinInterface: %s - Event CommandName: %s", twinEvent.TwinInstance, twinEvent.TwinInterface, twinEvent.CommandName))
+		} else {
+			logger.Info(fmt.Sprintf("Handling Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
+		}
+
 		return callback(twinEvent)
 	}
+
+	if twinEvent.EventType == ktwin.CommandEvent {
+		logger.Info(fmt.Sprintf("Skipping Event TwinInstance: %s - Event TwinInterface: %s - Event CommandName: %s", twinEvent.TwinInstance, twinEvent.TwinInterface, twinEvent.CommandName))
+	} else {
+		logger.Info(fmt.Sprintf("Skipping Event TwinInstance: %s - Event TwinInterface: %s", twinEvent.TwinInstance, twinEvent.TwinInterface))
+	}
+
 	return nil
 }
 
