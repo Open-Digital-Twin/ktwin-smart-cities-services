@@ -106,7 +106,7 @@ func (s *WeatherObservedServiceSuite) Test_WeatherObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"steady","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
-					Reply(http.StatusOK)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -135,7 +135,7 @@ func (s *WeatherObservedServiceSuite) Test_WeatherObservedEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-weatherobserved/ngsi-ld-city-weatherobserved-nb001-p00007/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -159,7 +159,7 @@ func (s *WeatherObservedServiceSuite) Test_WeatherObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"raising","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
-					Reply(http.StatusOK)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -188,7 +188,7 @@ func (s *WeatherObservedServiceSuite) Test_WeatherObservedEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-weatherobserved/ngsi-ld-city-weatherobserved-nb001-p00007/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -212,7 +212,7 @@ func (s *WeatherObservedServiceSuite) Test_WeatherObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"falling","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
-					Reply(http.StatusOK)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -241,7 +241,7 @@ func (s *WeatherObservedServiceSuite) Test_WeatherObservedEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-weatherobserved/ngsi-ld-city-weatherobserved-nb001-p00007/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -265,7 +265,7 @@ func (s *WeatherObservedServiceSuite) Test_WeatherObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-weatherobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"pressureTendency":"steady","atmosphericPressure":10,"dewpoint":-10.399999999999999,"feelsLikeTemperature":-1.9253082357521691,"temperature":8,"relativeHumidity":8,"windSpeed":8}`).
-					Reply(http.StatusOK)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

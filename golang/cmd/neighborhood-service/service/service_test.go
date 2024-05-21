@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -94,7 +95,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/s4city-city-neighborhood/s4city-city-neighborhood-nb001/latest").
-					Reply(404)
+					Reply(http.StatusNotFound)
 
 				gock.New(s.brokerUrl).
 					Post("/").
@@ -106,7 +107,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 					MatchHeader("ce-type", "ktwin.store.s4city-city-neighborhood").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"GOOD","dateObserved":"2024-01-01T00:00:00Z","dateModified":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -138,7 +139,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/s4city-city-neighborhood/s4city-city-neighborhood-nb001/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -160,7 +161,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 					MatchHeader("ce-type", "ktwin.store.s4city-city-neighborhood").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"UNHEALTHY","dateObserved":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -192,7 +193,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/s4city-city-neighborhood/s4city-city-neighborhood-nb001/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -214,7 +215,7 @@ func (s *NeighborhoodServiceSuite) Test_NeighborhoodEvent() {
 					MatchHeader("ce-type", "ktwin.store.s4city-city-neighborhood").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"UNHEALTHY","dateObserved":"2024-01-01T00:00:00Z","dateModified":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

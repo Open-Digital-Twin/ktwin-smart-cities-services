@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -93,7 +94,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
-					Reply(404)
+					Reply(http.StatusNotFound)
 
 				gock.New(s.brokerUrl).
 					Post("/").
@@ -105,7 +106,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"on","dateLastSwitchingOn":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -134,7 +135,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
-					Reply(404)
+					Reply(http.StatusNotFound)
 
 				gock.New(s.brokerUrl).
 					Post("/").
@@ -146,7 +147,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"off","dateLastSwitchingOff":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 			},
 			expectedError: nil,
@@ -176,7 +177,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -198,7 +199,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"off","dateLastSwitchingOff":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 			},
 			expectedError: nil,
@@ -229,7 +230,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 				pastDateTime, _ := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -251,7 +252,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"status":"defectiveLamp","powerState":"off","dateLastSwitchingOff":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 			},
 			expectedError: nil,
@@ -281,7 +282,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -303,7 +304,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"powerState":"on","dateLastSwitchingOn":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 			},
 			expectedError: nil,
@@ -334,7 +335,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 				pastDateTime, _ := time.Parse(time.RFC3339, "2023-01-01T00:00:00Z")
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-streetlight/ngsi-ld-city-streetlight-nb001-p00007/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -356,7 +357,7 @@ func (s *StreetlightServiceSuite) Test_StreetlightEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-streetlight").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"status":"defectiveLamp","powerState":"on","dateLastSwitchingOn":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 			},
 			expectedError: nil,

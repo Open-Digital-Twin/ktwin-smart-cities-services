@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -120,7 +121,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-offstreetparking/ngsi-ld-city-offstreetparking-nb001-ofp0005/latest").
-					Reply(404)
+					Reply(http.StatusNotFound)
 
 				gock.New(s.brokerUrl).
 					Post("/").
@@ -132,7 +133,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":1,"totalSpotNumber":50}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -162,7 +163,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-offstreetparking/ngsi-ld-city-offstreetparking-nb001-ofp0005/latest").
-					Reply(404)
+					Reply(http.StatusNotFound)
 
 				gock.New(s.brokerUrl).
 					Post("/").
@@ -174,7 +175,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":0,"totalSpotNumber":50}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -204,7 +205,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-offstreetparking/ngsi-ld-city-offstreetparking-nb001-ofp0005/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -226,7 +227,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":0,"totalSpotNumber":50}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -256,7 +257,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 			mockExternalService: func() {
 				gock.New(s.eventStoreUrl).
 					Get("/api/v1/twin-events/ngsi-ld-city-offstreetparking/ngsi-ld-city-offstreetparking-nb001-ofp0005/latest").
-					Reply(200).
+					Reply(http.StatusOK).
 					SetHeader("Content-Type", "application/json").
 					SetHeader("ce-specversion", "1.0").
 					SetHeader("ce-time", dateTimeFormatted).
@@ -278,7 +279,7 @@ func (s *ParkingServiceSuite) Test_ParkingEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-offstreetparking").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"occupiedSpotNumber":2,"totalSpotNumber":50}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

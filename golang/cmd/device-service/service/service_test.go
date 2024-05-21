@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -100,7 +101,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-type", "ktwin.virtual.ngsi-ld-city-device").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"batteryLevel":20,"measurementFrequency":15,"dateObserved":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 				gock.New(s.brokerUrl).
 					Post("/").
@@ -112,7 +113,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-device").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"batteryLevel":20,"measurementFrequency":15,"dateObserved":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -149,7 +150,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-type", "ktwin.virtual.ngsi-ld-city-device").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"batteryLevel":20,"measurementFrequency":15}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 				gock.New(s.brokerUrl).
 					Post("/").
@@ -161,7 +162,7 @@ func (s *DeviceServiceSuite) Test_DeviceEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-device").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"batteryLevel":15,"dateObserved":"2024-01-01T00:00:00Z"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

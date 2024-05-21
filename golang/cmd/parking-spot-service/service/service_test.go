@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -119,14 +120,14 @@ func (s *ParkingSpotServiceSuite) Test_ParkingSpotEvent() {
 				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
-					MatchHeader("ce-id", "").
+					MatchHeader("ce-id", DEFAULT_UUID).
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
 					MatchHeader("ce-type", "ktwin.command.ngsi-ld-city-offstreetparking.updatevehiclecount").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"vehicleEntranceCount":1}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -156,14 +157,14 @@ func (s *ParkingSpotServiceSuite) Test_ParkingSpotEvent() {
 				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
-					MatchHeader("ce-id", "").
+					MatchHeader("ce-id", DEFAULT_UUID).
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "ngsi-ld-city-offstreetparking-nb001-ofp0005").
 					MatchHeader("ce-type", "ktwin.command.ngsi-ld-city-offstreetparking.updatevehiclecount").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"vehicleExitCount":1}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

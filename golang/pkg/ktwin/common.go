@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"time"
 
 	"log"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/clock"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
+	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/uuid"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 )
 
@@ -45,11 +47,17 @@ func PostCloudEvent(event *cloudevents.Event, url string) error {
 		return errors.New("error to publish cloud event: " + err.Error())
 	}
 
-	if response.StatusCode != http.StatusNoContent {
+	if response.StatusCode == http.StatusAccepted {
 		return nil
 	}
 
-	return fmt.Errorf("error to publish cloud event. status code: %d", response.StatusCode)
+	defer response.Body.Close()
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return errors.New("error to read response body: " + err.Error())
+	}
+
+	return fmt.Errorf("error to publish cloud event. status code: %d. response body: %s", response.StatusCode, string(body))
 }
 
 func GetCloudEvent(cloudEvent *cloudevents.Event, url string) (*cloudevents.Event, error) {
@@ -197,6 +205,7 @@ func (ktwinEvent *TwinEvent) SetEvent(twinInterface, twinInstance string, eventT
 
 func BuildCloudEvent(ceType, ceSource string, data interface{}) *cloudevents.Event {
 	event := cloudevents.NewEvent()
+	event.SetID(uuid.Uuid())
 	event.SetTime(*clock.Now())
 	event.SetType(ceType)
 	event.SetSource(ceSource)

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -94,14 +95,14 @@ func (s *PoleServiceSuite) Test_PoleUpdateAirQualityCommandEvent() {
 				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
-					MatchHeader("ce-id", "").
+					MatchHeader("ce-id", DEFAULT_UUID).
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "s4city-city-neighborhood-nb001").
 					MatchHeader("ce-type", "ktwin.command.s4city-city-neighborhood.updateairqualityindex").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"MODERATE"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

@@ -6,10 +6,7 @@ import (
 
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin"
 	"github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/ktwin/ktwingraph"
-	log "github.com/Open-Digital-Twin/ktwin-smart-cities-services/pkg/logger"
 )
-
-var logger = log.NewLogger()
 
 // TwinCommand
 
@@ -21,6 +18,8 @@ func PublishCommand(command string, commandPayload interface{}, relationshipName
 	ceType := fmt.Sprintf(ktwin.EventCommandExecuted, relationship.Interface, strings.ToLower(command))
 	ceSource := relationship.Instance
 	cloudEvent := ktwin.BuildCloudEvent(ceType, ceSource, commandPayload)
+
+	fmt.Printf("Publishing Command Ce-Type: %s - Publishing Ce-Source: %s\n", ceType, ceSource)
 
 	err := ktwin.PostCloudEvent(cloudEvent, ktwin.GetBrokerURL())
 

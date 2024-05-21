@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -100,7 +101,7 @@ func (s *CrowdFlowObservedServiceSuite) Test_CrowdFlowObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":2,"congested":true,"averageHeadwayTime":1}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -137,7 +138,7 @@ func (s *CrowdFlowObservedServiceSuite) Test_CrowdFlowObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":2,"congested":true,"averageHeadwayTime":2}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -174,7 +175,7 @@ func (s *CrowdFlowObservedServiceSuite) Test_CrowdFlowObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":4,"congested":true,"averageHeadwayTime":1}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},
@@ -211,7 +212,7 @@ func (s *CrowdFlowObservedServiceSuite) Test_CrowdFlowObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-crowdflowobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"averageCrowdSpeed":5,"congested":false,"averageHeadwayTime":3}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

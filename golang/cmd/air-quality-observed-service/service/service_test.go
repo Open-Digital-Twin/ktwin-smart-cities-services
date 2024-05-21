@@ -1,6 +1,7 @@
 package service
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -100,19 +101,19 @@ func (s *AirQualityObservedServiceSuite) Test_PoleAirQualityObservedEvent() {
 					MatchHeader("ce-type", "ktwin.store.ngsi-ld-city-airqualityobserved").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"CODensity":8,"PM10Density":8,"PM25Density":8,"SO2Density":8,"NO2Density":8,"O3Density":8,"COAqiLevel":"MODERATE","PM10AqiLevel":"GOOD","PM25AqiLevel":"GOOD","SO2AqiLevel":"GOOD","O3AqiLevel":"GOOD"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 
 				gock.New(s.brokerUrl).
 					Post("/").
 					MatchHeader("Content-Type", "application/json").
-					MatchHeader("ce-id", "").
+					MatchHeader("ce-id", DEFAULT_UUID).
 					MatchHeader("ce-specversion", "1.0").
 					MatchHeader("ce-time", dateTimeFormatted).
 					MatchHeader("ce-source", "city-pole-nb001-p00007").
 					MatchHeader("ce-type", "ktwin.command.city-pole.updateairqualityindex").
 					MatchHeader("ce-subject", "").
 					BodyString(`{"aqiLevel":"MODERATE"}`).
-					Reply(200)
+					Reply(http.StatusAccepted)
 			},
 			expectedError: nil,
 		},

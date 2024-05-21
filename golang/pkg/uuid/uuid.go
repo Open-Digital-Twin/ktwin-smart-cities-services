@@ -6,7 +6,9 @@ import (
 
 type NewUuidFunc func() string
 
-var NewUuid NewUuidFunc
+var NewUuid NewUuidFunc = func() string {
+	return guuid.NewString()
+}
 
 func ResetUuidImplementation() {
 	NewUuid = func() string {
@@ -15,5 +17,5 @@ func ResetUuidImplementation() {
 }
 
 func Uuid() string {
-	return guuid.NewString()
+	return NewUuid()
 }
