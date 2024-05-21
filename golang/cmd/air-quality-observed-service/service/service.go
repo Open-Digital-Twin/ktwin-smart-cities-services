@@ -28,7 +28,7 @@ var twinGraph *ktwin.TwinGraph
 func loadTwinGraph() error {
 	if twinGraph == nil {
 		var err error
-		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{TWIN_INTERFACE_AIR_QUALITY_OBSERVED})
+		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{TWIN_INTERFACE_CITY_POLE})
 		if err != nil {
 			logger.Error("Error loading twin graph", err)
 			return err
