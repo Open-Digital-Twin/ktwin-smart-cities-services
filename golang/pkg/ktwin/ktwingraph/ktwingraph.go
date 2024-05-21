@@ -13,10 +13,10 @@ import (
 
 var logger = log.NewLogger()
 
-func LoadTwinGraphByInstances(twinInstances []string) (ktwin.TwinGraph, error) {
+func LoadTwinGraphByInterfaces(twinInterfaces []string) (ktwin.TwinGraph, error) {
 	var ktwinGraph ktwin.TwinGraph
 	var ktwinGraphList []ktwin.TwinInstanceGraph
-	for _, twinInstance := range twinInstances {
+	for _, twinInstance := range twinInterfaces {
 		ktwinGraph, err := getTwinGraphInstance(twinInstance)
 		if err != nil {
 			logger.Error("Error getting Twin Graph instance", err)
@@ -37,16 +37,22 @@ func LoadTwinGraphByInstances(twinInstances []string) (ktwin.TwinGraph, error) {
 	return ktwinGraph, nil
 }
 
-func getTwinGraphInstance(twinInstance string) (*ktwin.TwinGraph, error) {
+func getTwinGraphInstance(twinInterface string) (*ktwin.TwinGraph, error) {
 	var ktwinGraph ktwin.TwinGraph
 
 	if os.Getenv("ENV") == "local" || os.Getenv("ENV") == "test" {
 		ktwinGraph, err := loadLocalTwinGraph()
-		return ktwinGraph, err
+		filteredGraph := &ktwin.TwinGraph{}
+		for _, instanceGraph := range ktwinGraph.TwinInstancesGraph {
+			if instanceGraph.Interface == twinInterface {
+				filteredGraph.TwinInstancesGraph = append(filteredGraph.TwinInstancesGraph, instanceGraph)
+			}
+		}
+		return filteredGraph, err
 	}
 
 	ktwinGraphStoreURL := os.Getenv("KTWIN_GRAPH_URL")
-	response, err := http.Get(ktwinGraphStoreURL + "/" + twinInstance)
+	response, err := http.Get(ktwinGraphStoreURL + "/" + twinInterface)
 	if err != nil {
 		fmt.Println("Error while calling service:", err)
 		return nil, err

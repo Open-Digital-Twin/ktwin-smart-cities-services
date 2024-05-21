@@ -15,7 +15,7 @@ var twinGraph *ktwin.TwinGraph
 func loadTwinGraph() error {
 	if twinGraph == nil {
 		var err error
-		graph, err := ktwingraph.LoadTwinGraphByInstances([]string{model.TWIN_INTERFACE_OFF_STREET_PARKING})
+		graph, err := ktwingraph.LoadTwinGraphByInterfaces([]string{model.TWIN_INTERFACE_OFF_STREET_PARKING})
 		if err != nil {
 			logger.Error("Error loading twin graph", err)
 			return err
