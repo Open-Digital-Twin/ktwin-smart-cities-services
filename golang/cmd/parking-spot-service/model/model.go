@@ -3,8 +3,7 @@ package model
 import "time"
 
 var (
-	TWIN_INTERFACE_ON_STREET_PARKING_SPOT  = "ngsi-ld-city-onstreetparkingspot"
-	TWIN_INTERFACE_OFF_STREET_PARKING_SPOT = "ngsi-ld-city-offstreetparkingspot"
+	TWIN_INTERFACE_ON_STREET_PARKING_SPOT = "ngsi-ld-city-onstreetparkingspot"
 
 	TWIN_INTERFACE_PARKING_SPOT                    = "ngsi-ld-city-parkingspot"
 	TWIN_INTERFACE_OFF_STREET_PARKING_RELATIONSHIP = "refOffStreetParking"

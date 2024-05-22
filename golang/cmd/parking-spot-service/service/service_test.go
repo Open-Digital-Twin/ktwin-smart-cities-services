@@ -78,7 +78,7 @@ func (s *ParkingSpotServiceSuite) Test_ParkingSpotEvent() {
 				twinEvent := ktwin.NewTwinEvent()
 				twinEvent.EventType = ktwin.CommandEvent
 				twinEvent.TwinInstance = "ngsi-ld-city-offstreetparkingspot-nb001-ofp0005-s0008"
-				twinEvent.TwinInterface = "ngsi-ld-city-offstreetparkingspot"
+				twinEvent.TwinInterface = "ngsi-ld-city-parkingspot"
 
 				cloudEvent := cloudevents.NewEvent()
 				cloudEvent.SetData("application/json", []byte(`{"status": ""}`))
@@ -104,7 +104,7 @@ func (s *ParkingSpotServiceSuite) Test_ParkingSpotEvent() {
 				twinEvent := ktwin.NewTwinEvent()
 				twinEvent.EventType = ktwin.CommandEvent
 				twinEvent.TwinInstance = "ngsi-ld-city-offstreetparkingspot-nb001-ofp0005-s0008"
-				twinEvent.TwinInterface = "ngsi-ld-city-offstreetparkingspot"
+				twinEvent.TwinInterface = "ngsi-ld-city-parkingspot"
 
 				cloudEvent := cloudevents.NewEvent()
 				cloudEvent.SetData("application/json", []byte(`{"status": "occupied"}`))
@@ -141,7 +141,7 @@ func (s *ParkingSpotServiceSuite) Test_ParkingSpotEvent() {
 				twinEvent := ktwin.NewTwinEvent()
 				twinEvent.EventType = ktwin.CommandEvent
 				twinEvent.TwinInstance = "ngsi-ld-city-offstreetparkingspot-nb001-ofp0005-s0008"
-				twinEvent.TwinInterface = "ngsi-ld-city-offstreetparkingspot"
+				twinEvent.TwinInterface = "ngsi-ld-city-parkingspot"
 
 				cloudEvent := cloudevents.NewEvent()
 				cloudEvent.SetData("application/json", []byte(`{"status": "free"}`))

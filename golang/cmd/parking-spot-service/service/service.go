@@ -33,7 +33,7 @@ func HandleEvent(event *ktwin.TwinEvent) error {
 	if err != nil {
 		return err
 	}
-	return kevent.HandleEvent(event, model.TWIN_INTERFACE_OFF_STREET_PARKING_SPOT, handleParkingSpotEvent)
+	return kevent.HandleEvent(event, model.TWIN_INTERFACE_PARKING_SPOT, handleParkingSpotEvent)
 }
 
 func handleParkingSpotEvent(event *ktwin.TwinEvent) error {
